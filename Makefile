@@ -6,7 +6,7 @@
 #    By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/26 12:41:24 by ofedorov          #+#    #+#              #
-#    Updated: 2016/10/26 12:55:51 by ofedorov         ###   ########.fr        #
+#    Updated: 2016/11/05 13:12:06 by ofedorov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME	=	libftprintf.a
 CC		=	gcc
 CFLAGS	=	-Wall -Werror -Wextra
 
-SRCSFL	+=	
+SRCSFL	+=	test_main.c
 
 SRCSFD	=	srcs
 OBJSFD	=	objs
