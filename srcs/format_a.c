@@ -44,7 +44,7 @@ static int	round(long double *nbr, t_flags *flags)
 
 	*nbr = ABS(*nbr);
 	if (flags->precision == -1)
-		flags->precision = 13; // TODO default value
+		flags->precision = 6; // TODO default value
 	precision = flags->precision;
 	left = *nbr - (int)*nbr;
 	while (precision-- > 0)
@@ -98,15 +98,6 @@ int 		format_a(t_flags *flags, va_list ap)
 	long double	nbr;
 	int			chars;
 
-	if (flags->length_mod == LEN_L_CAP)
-		nbr = va_arg(ap, long double);
-	else if (flags->length_mod == LEN_L || flags->length_mod == LEN_NONE)
-		nbr = va_arg(ap, double);
-	else
-	{
-		flags->error = "Error: unacceptable length modifier";
-		return (-1);
-	}
 	if ()
 	return (flags->error) ? -1 : _format_a(nbr, flags);
 }

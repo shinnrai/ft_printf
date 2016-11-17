@@ -10,4 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <libftprintf.h>
 
+int format_p(t_flags *flags, va_list ap)
+{
+	void	*ptr;
+
+	ptr = va_arg(ap, void *);
+	//TODO with 0-f representation
+}
