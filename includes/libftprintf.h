@@ -79,8 +79,7 @@ t_flags					*flags_count(t_flags *flags);
 t_flags					*read_format(int fd, char **str, va_list ap);
 
 int						format_a(t_flags *flags, va_list ap); //TODO make array of functions
-int						format_c(int c, t_flags *flags);
-int						format_C(wint_t c, t_flags *flags);
+int						format_c(t_flags *flags, va_list ap);
 int						format_d(ptrdiff_t nbr, t_flags *flags);
 int 					format_e(double nbr, t_flags *flags);
 int						format_s(char *str, t_flags *flags);

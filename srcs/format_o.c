@@ -10,4 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <libftprintf.h>
 
+int 	format_o(t_flags *flags, va_list ap)
+{
+	unsigned long long	val;
+
+
+}

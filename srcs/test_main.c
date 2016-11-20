@@ -8,7 +8,7 @@
 
 #include <wchar.h>
 
-
+#include <limits.h>
 
 int	main(void)
 {
@@ -21,7 +21,7 @@ int	main(void)
 	flags->precision = -1;
 	(void)flags;
 	//printf("%- - 5.*f", -4, 1.111111);
-	printf("lol  %a", 3.7);
+	//printf("lol  %+p", flags);
 
 //	printf("\n%d\n", format_a(-0x1B8, flags));
 
@@ -30,4 +30,8 @@ int	main(void)
 	//write(1, "my:    \t", 8);
 	//printf("\n%zu", format_A(par));
 
+	printf(">%llu<", LLONG_MIN);
+
 }
+
+//p: - , field width
