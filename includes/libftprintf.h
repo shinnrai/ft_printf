@@ -43,6 +43,7 @@ typedef struct			s_flags
 	bool				capital;
 	bool				left_justified;
 	bool				sign;
+	bool				positive;
 	bool				space;
 	bool				alternative;
 	bool				zero;
@@ -53,6 +54,7 @@ typedef struct			s_flags
 	t_length_mod		length_mod;
 	char				format;
 	int					chars_wr;
+	int 				chars_val;
 	char				*error;
 }						t_flags;
 
@@ -77,10 +79,12 @@ void					ft_write(const char *to_write, int size,
 t_flags					*new_flags(int fd, char format, bool just_count);
 t_flags					*flags_count(t_flags *flags);
 t_flags					*read_format(int fd, char **str, va_list ap);
+void					format_before(t_flags *flags);
+void					format_after(t_flags *flags);
 
 int						format_a(t_flags *flags, va_list ap); //TODO make array of functions
 int						format_c(t_flags *flags, va_list ap);
-int						format_d(ptrdiff_t nbr, t_flags *flags);
+int						format_d(t_flags *flags, va_list ap);
 int 					format_e(double nbr, t_flags *flags);
 int						format_s(char *str, t_flags *flags);
 int						format_S(wchar_t *str, t_flags *flags);

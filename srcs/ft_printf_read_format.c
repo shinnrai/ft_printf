@@ -20,35 +20,25 @@ unsigned char g_dioxn[9] = {1, 1, 1, 1, 1, 1, 1, 1, 0};
 unsigned char g_feag[9] = {0, 0, 1, 1, 0, 0, 0, 0, 1};
 unsigned char g_pCS_perc[9] = {0, 0, 1, 0, 0, 0, 0, 0, 0};
 
-static int	was_before(char c, char *format)
-{
-	if (*(format - 1) == c && c != '0')
-		return (1);
-	return (0);
-}
-
 static void	check_flags(t_flags *flags, char **format)
 {
 	while (**format == '-' || **format == '+' || **format == ' ' ||
 			**format == '#' || **format == '0')
 	{
-		if (was_before(**format, *format))
-		{
-			flags->error = "duplicated flag";
-			return ;
-		}
 		if (**format == '-')
 			flags->left_justified = true;
 		else if (**format == '+')
 			flags->sign = true;
-		else if (**format == ' ' && flags->sign == false)
+		else if (**format == ' ')
 			flags->space = true;
 		else if (**format == '#')
 			flags->alternative = true;
-		else if (**format == '0' && flags->left_justified == false)
+		else if (**format == '0')
 			flags->zero = true;
 		(*format)++;
 	}
+	if ((flags->space && flags->sign) || (flags->zero && flags->left_justified))
+		flags->error = "cannot use these flags together";
 }
 
 static void	check_precision(t_flags *flags, char **format, va_list ap)
@@ -95,6 +85,9 @@ void	check_length_mod(t_flags *flags, char **format)
 		flags->length_mod = LEN_L_CAP;
 	else
 		flags->length_mod = LEN_NONE;
+	(*format)++;
+	if (flags->length_mod == LEN_HH || flags->length_mod == LEN_LL)
+		(*format)++;
 }
 
 void	check_field_width(t_flags *flags, char **format, va_list ap)
@@ -126,12 +119,12 @@ void	determine_format(t_flags *flags, char **f)
 		flags->format = **f - ('A' - 'a');
 		flags->capital = true;
 	}
-	else if (**f == 'C' || **f == 'S')
+	else if (**f == 'C' || **f == 'S' || **f == 'D' || **f == 'O' || **f == 'U')
 	{
 		flags->format = **f - ('A' - 'a');
 		if (flags->length_mod != LEN_NONE)
-			flags->error = "cannot use length modifiers with this "
-					"format";
+			flags->error = "cannot use length modifiers with this format";
+		flags->length_mod == LEN_L;
 	}
 	else if (**f == '%')
 		flags->format = '%';
@@ -163,43 +156,40 @@ static void	check_l_mod(t_flags *flags)
 				"with this format";
 }
 
-void	check_specific_f(t_flags *flags)
+void	check_specific_f(t_flags *flags, char *format)
 {
-	if (flags->format == 'c' && flags->expl_precision == true)
+	if ((flags->format == 'c' && (flags->expl_precision || flags->sign ||
+			flags->space || flags->alternative || flags->zero)) ||
+		(flags->format == 's' && (flags->sign || flags->space || flags->zero ||
+			flags->alternative)) ||
+		((flags->format == 'd' || flags->format == 'i') && flags->alternative)
+		|| ((flags->format == 'o' || flags->format == 'x' ||
+		flags->format == 'u') && (flags->sign || flags->space)) ||
+		(flags->format == 'u' && flags->alternative) ||
+		(flags->format == 'n' && (flags->sign || flags->space || flags->zero ||
+			flags->left_justified || flags->field_width != -1 ||
+			flags->alternative || flags->expl_precision)) ||
+		(flags->format == 'p' && (flags->sign || flags->space || flags->zero ||
+			flags->alternative || flags->expl_precision))) //TODO OMG CHECK THIS SHIT
 		flags->error = "undefined behavior";
-	if (flags->format == 'n' && (flags->sign || flags->left_justified ||
-		flags->space || flags->zero || flags->alternative ||
-		flags->field_width != -1 || flags->expl_precision))
-		flags->error = "cannot use any flag, field width or precision with this"
-						"format";
-	if (flags->format == 'p' && (flags->sign || flags->space || flags->zero ||
-		flags->alternative || flags->expl_precision))
-		flags->error = "undefined behavior";
-	if (flags->expl_precision == true && (flags->format == 'd' ||
-		flags->format == 'i' || flags->format == 'o' || flags->format == 'x' ||
-		flags->format == 'u'))
-		flags->zero = false;
-	if (flags->alternative == true && (flags->format == 'c' ||
-		flags->format == 's' || flags->format == 'd' || flags->format == 'i' ||
-		flags->format == 'u'))
-		flags->error = "cannot use \"#\" flag with this format";
+
 }
 
-t_flags	*read_format(int fd, char **str, va_list ap) //TODO other capital D = ld, O etc handle
+t_flags	*read_format(int fd, char **str, va_list ap)
 {
 	t_flags	*flags;
 	char	*format;
 
 	format = *str;
 	flags = new_flags(fd, LEN_NONE, 0, false);
-	format++;
+	format++; //TODO maybe do it before
 	check_flags(flags, &format);
 	check_field_width(flags, &format, ap);
 	check_precision(flags, &format, ap);
 	check_length_mod(flags, &format);
 	determine_format(flags, &format);
 	check_l_mod(flags);
-	check_specific_f(flags);
+	check_specific_f(flags, format);
 	if (!flags->error)
 		*str = format;
 	return (flags);

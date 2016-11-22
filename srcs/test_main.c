@@ -30,8 +30,8 @@ int	main(void)
 	//write(1, "my:    \t", 8);
 	//printf("\n%zu", format_A(par));
 
-	printf(">%llu<", LLONG_MIN);
-
+	//double a = 1. / 0;
+	printf(">%.d<", 0);
 }
 
 //p: - , field width

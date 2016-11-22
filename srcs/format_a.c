@@ -64,7 +64,7 @@ static int	round(long double *nbr, t_flags *flags)
 }
 
 
-static int	_format_a(long double nbr, t_flags *flags) //TODO maybe move to _format_a and do all flags management here
+static int	_format_a(long double nbr, t_flags *flags)
 {
 	int 	power;
 	int 	left;
@@ -77,7 +77,7 @@ static int	_format_a(long double nbr, t_flags *flags) //TODO maybe move to _form
 	power += round(&nbr, flags); //TODO test with min max
 	left = flags->precision;
 	ft_write((nbr == 0) ? "0" : "1", 1, flags);
-	if (nbr != 0 && (nbr - (int)nbr != 0) && left != 0) //maybe remove left == 0
+	if (nbr != 0 && (nbr - (int)nbr != 0) && left != 0 || flags->alternative) //maybe remove left == 0
 		ft_write(".", 1, flags);
 	while (nbr != 0 && (nbr - (int)nbr != 0) && left-- != 0)
 	{
@@ -93,7 +93,7 @@ static int	_format_a(long double nbr, t_flags *flags) //TODO maybe move to _form
 	return (flags->error) ? -1 : flags->chars_wr;
 }
 
-int 		format_a(t_flags *flags, va_list ap)
+int 		format_a(t_flags *flags, va_list ap) //TODO check for nan +-inf
 {
 	long double	nbr;
 	int			chars;

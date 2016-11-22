@@ -30,6 +30,8 @@ static int	wr_cs(int fd, const char *str, int size)
 
 void		ft_write(const char *to_write, int size, t_flags *flags)
 {
+	if (flags->error)
+		return ;
 	if (flags->just_count == true)
 		flags->chars_wr += size;
 	else if (flags->capital == true)

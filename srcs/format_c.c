@@ -30,5 +30,6 @@ int 		format_c(t_flags *flags, va_list ap)
 		val = va_arg(ap, wint_t);
 	else
 		val = va_arg(ap, int);
+	flags->chars_val = _format_c(val, flags_count(flags));
 	return (_format_c(val, flags));
 }
