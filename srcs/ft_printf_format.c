@@ -29,25 +29,14 @@ t_flags	*new_flags(int fd, char format, bool just_count)
 	flags->alternative = false;
 	flags->capital = false;
 	flags->field_width = -1;
+	flags->spec_width = false;
 	flags->left_justified = false;
 	flags->precision = -1;
 	flags->expl_precision = false;
 	flags->sign = false;
-	flags->nositive = true;
+	flags->positive = true;
 	flags->space = false;
 	return (flags);
-}
-
-t_flags	*flags_count(t_flags *flags)
-{
-	t_flags	*flags_count = new_flags(flags->fd, flags->format, true);
-	flags_count->alternative = flags->alternative;
-	flags_count->capital = flags->capital;
-	flags_count->precision = flags->precision;
-	flags_count->expl_precision = flags->expl_precision;
-	flags_count->sign = flags->sign;
-	flags_count->space = flags->space;
-	return (flags_count);
 }
 
 void	format_before(t_flags *flags)
@@ -56,6 +45,9 @@ void	format_before(t_flags *flags)
 
 	spaces = flags->field_width - flags->chars_val;
 	spaces += (flags->format == 'x' && flags->alternative ? 2 : 0);
+	if ((flags->format == 'd' || flags->format == 'o' || flags->format == 'x' ||
+		flags->format == 'u') && (flags->precision > flags->chars_val))
+		spaces -= flags->precision - flags->chars_val;
 	if (!flags->left_justified && flags->field_width != -1 && !flags->zero)
 		while (spaces-- > 0)
 			ft_write(" ", 1, flags);
@@ -70,7 +62,15 @@ void	format_before(t_flags *flags)
 
 void	format_after(t_flags *flags) //TODO check if it's working
 {
-	if (flags->left_justified && flags->field_width != -1)
+	if (flags->error || flags->chars_wr == -1)
+		flags->chars_wr = -1;
+	else if (flags->left_justified && flags->field_width != -1)
 		while (flags->chars_wr < flags->field_width && !flags->error)
 			ft_write(" ", 1, flags);
+}
+
+int		switch_format(t_flags *flags, va_list ap) //TODO redo
+{
+	return (g_formats[flags->format](flags, ap));
+
 }

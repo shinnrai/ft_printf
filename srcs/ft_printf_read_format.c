@@ -16,7 +16,7 @@
 		((x) == '-' || (x) == '+' || (x) == ' ' || (x) == '#' || (x) == '0')
 
 unsigned char g_cs[9] = {0, 0, 1, 1, 0, 0, 0, 0, 0};
-unsigned char g_dioxn[9] = {1, 1, 1, 1, 1, 1, 1, 1, 0};
+unsigned char g_dioxun[9] = {1, 1, 1, 1, 1, 1, 1, 1, 0};
 unsigned char g_feag[9] = {0, 0, 1, 1, 0, 0, 0, 0, 1};
 unsigned char g_pCS_perc[9] = {0, 0, 1, 0, 0, 0, 0, 0, 0};
 
@@ -50,7 +50,7 @@ static void	check_precision(t_flags *flags, char **format, va_list ap)
 		{
 			flags->precision = va_arg(ap, int); //TODO also handle error?
 			if (flags->precision < 0)
-				flags->precision = -2;
+				flags->precision = -2; //TODO check if -1
 			flags->expl_precision = true;
 			(*format)++;
 		}
@@ -85,7 +85,8 @@ void	check_length_mod(t_flags *flags, char **format)
 		flags->length_mod = LEN_L_CAP;
 	else
 		flags->length_mod = LEN_NONE;
-	(*format)++;
+	if (flags->length_mod != LEN_NONE)
+		(*format)++;
 	if (flags->length_mod == LEN_HH || flags->length_mod == LEN_LL)
 		(*format)++;
 }
@@ -93,10 +94,16 @@ void	check_length_mod(t_flags *flags, char **format)
 void	check_field_width(t_flags *flags, char **format, va_list ap)
 {
 	if (**format == '*')
+	{
 		flags->field_width = va_arg(ap, int); //TODO maybe check for error
+		flags->spec_width = true;
+	}
 	else if (ft_isdigit(**format))
+	{
 		flags->field_width = ft_atoi(*format);
-	if (flags->field_width < 0)
+		flags->spec_width = true;
+	}
+	if (flags->spec_width && flags->field_width < 0)
 	{
 		flags->left_justified = true;
 		flags->field_width = -(flags->field_width);
@@ -124,7 +131,7 @@ void	determine_format(t_flags *flags, char **f)
 		flags->format = **f - ('A' - 'a');
 		if (flags->length_mod != LEN_NONE)
 			flags->error = "cannot use length modifiers with this format";
-		flags->length_mod == LEN_L;
+		flags->length_mod = LEN_L;
 	}
 	else if (**f == '%')
 		flags->format = '%';
@@ -133,7 +140,6 @@ void	determine_format(t_flags *flags, char **f)
 		flags->error = "unknown format";
 		return ;
 	}
-	(*f)++;
 }
 
 static void	check_l_mod(t_flags *flags)
@@ -144,19 +150,19 @@ static void	check_l_mod(t_flags *flags)
 	if (flags->format == 'c' || flags->format == 's')
 		ret = g_cs[flags->length_mod];
 	if (flags->format == 'd' || flags->format == 'i' || flags->format == 'o' ||
-		flags->format == 'x' || flags->format == 'n')
-		ret = g_dioxn[flags->length_mod];
+		flags->format == 'x' || flags->format == 'u' || flags->format == 'n')
+		ret = g_dioxun[flags->length_mod];
 	if (flags->format == 'f' || flags->format == 'e' || flags->format == 'a' ||
 		flags->format == 'g')
 		ret = g_feag[flags->length_mod];
 	if (flags->format == 'p' || flags->format == '%')
-		ret = g_pCS_pers[flags->length_mod];
+		ret = g_pCS_perc[flags->length_mod];
 	if (ret == 0)
 		flags->error = "cannot use this length modifier "
 				"with this format";
 }
 
-void	check_specific_f(t_flags *flags, char *format)
+void	check_specific_f(t_flags *flags)
 {
 	if ((flags->format == 'c' && (flags->expl_precision || flags->sign ||
 			flags->space || flags->alternative || flags->zero)) ||
@@ -175,13 +181,13 @@ void	check_specific_f(t_flags *flags, char *format)
 
 }
 
-t_flags	*read_format(int fd, char **str, va_list ap)
+t_flags	*read_format(int fd, const char **str, va_list ap)
 {
 	t_flags	*flags;
 	char	*format;
 
-	format = *str;
-	flags = new_flags(fd, LEN_NONE, 0, false);
+	format = (char *)*str;
+	flags = new_flags(fd, 0, false);
 	format++; //TODO maybe do it before
 	check_flags(flags, &format);
 	check_field_width(flags, &format, ap);
@@ -189,7 +195,7 @@ t_flags	*read_format(int fd, char **str, va_list ap)
 	check_length_mod(flags, &format);
 	determine_format(flags, &format);
 	check_l_mod(flags);
-	check_specific_f(flags, format);
+	check_specific_f(flags);
 	if (!flags->error)
 		*str = format;
 	return (flags);

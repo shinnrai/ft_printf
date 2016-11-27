@@ -12,7 +12,7 @@
 
 #include <libftprintf.h>
 //TODO add to libft
-static ptrdiff_t	power_ten(int power)
+long long		ft_power(int base, int power)
 {
 	ptrdiff_t	nbr;
 
@@ -20,29 +20,29 @@ static ptrdiff_t	power_ten(int power)
 	if (power < 0)
 		return (0);
 	while (power-- > 0)
-		nbr *= 10;
+		nbr *= base;
 	return (nbr);
 }
 
-static int   _format_d(ptrdiff_t nbr, t_flags *flags) //TODO handle -1 and precision
+static int 			_format_d(ptrdiff_t nbr, t_flags *flags) //TODO handle -1
 {
 	short		len;
 	ptrdiff_t	val;
 	char		c;
 
     val = nbr;
-	len = 0;
-	while (val != 0)
+	len = 1;
+	while (val >= 10 || val <= -10)
 	{
 		val /= 10;
 		len++;
 	}
 	while (len-- != 0)
 	{
-		c = '0' + (ABS(nbr / power_ten(len))) % 10; //TODO check for wtf value
+		c = '0' + (ABS((nbr / ft_power(10, len)) % 10)); //TODO check for wtf value
 		ft_write(&c, 1, flags);
 	}
-    return (flags->chars_wr);
+	return (flags->error) ? -1 : flags->chars_wr;
 }
 
 static ptrdiff_t	get_value(t_flags *flags, va_list ap)
@@ -69,15 +69,22 @@ static ptrdiff_t	get_value(t_flags *flags, va_list ap)
 int          format_d(t_flags *flags, va_list ap)
 {
 	ptrdiff_t	val;
+	int 		precision;
 
 	val = get_value(flags, ap);
-	flags->chars_val = _format_d(val, flags_count(flags));
+	flags->just_count = true;
+	_format_d(val, flags);
+	if (flags->precision == 0 && val == 0)
+		flags->chars_val = 0;
+	flags->just_count = false;
 	flags->positive = (val < 0) ? false : true;
 	format_before(flags);//putting '-' in format function
-	if (flags->precision != 0)
-		while (flags->precision-- - flags->chars_val > 0)
+	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
+	if (precision != 0 && (flags->zero || flags->precision != -1))
+		while (precision-- - flags->chars_val > 0)
 			ft_write("0", 1, flags);
-	if (flags->precision != 0 && val != 0) //TODO check if working (precision)
-		_format_d(val, flags);
+	if (flags->precision != 0 || val != 0)
+		flags->chars_wr = _format_d(val, flags);
+	format_after(flags);
 	return (flags->chars_wr);
 }

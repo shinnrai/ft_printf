@@ -1,18 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   format_i.c                                         :+:      :+:    :+:   */
+/*   ft_wstrlen.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/01 14:48:23 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/01 14:48:24 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/11/24 11:51:07 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/11/24 11:51:15 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
 
-int format_i(t_flags *flags, va_list ap)
+size_t	ft_wstrlen(wchar_t *str)
 {
-	return (format_d(nbr, flags));
+	size_t	len;
+
+	len = 0;
+	while (*str++)
+		len++;
+	return (len);
 }

@@ -1,18 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   format_i.c                                         :+:      :+:    :+:   */
+/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/01 14:48:23 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/01 14:48:24 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/09/26 20:02:46 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/09/26 20:03:33 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
 
-int format_i(t_flags *flags, va_list ap)
+void	ft_putstr_fd(char const *s, int fd)
 {
-	return (format_d(nbr, flags));
+	while (s && *s)
+		ft_putchar_fd(*s++, fd);
 }

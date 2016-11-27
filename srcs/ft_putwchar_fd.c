@@ -16,24 +16,24 @@ int	ft_putwchar_fd(wchar_t c, int fd)
 {
 	setlocale(LC_ALL, "");
 	if (c <= 0x7F)
-		return (ft_putchar_fd(c, fd) == -1)						? -1 : 2;
+		return (ft_putchar_fd(c, fd) == -1)						? -1 : 1; //TODO why its 1-4, not 2-5??
 	else if (c <= 0x7FF)
 	{
 		return (ft_putchar_fd((c >> 6) + 0xC0, fd) == -1 ||
-				ft_putchar_fd((c & 0x3F) + 0x80, fd) == -1)		? -1 : 3;
+				ft_putchar_fd((c & 0x3F) + 0x80, fd) == -1)		? -1 : 2;
 	}
 	else if (c <= 0xFFFF)
 	{
 		return (ft_putchar_fd((c >> 12) + 0xE0, fd) == -1 ||
 				ft_putchar_fd(((c >> 6) & 0x3F) + 0x80, fd) == -1 ||
-				ft_putchar_fd((c & 0x3F) + 0x80, fd) == -1)		? -1 : 4;
+				ft_putchar_fd((c & 0x3F) + 0x80, fd) == -1)		? -1 : 3;
 	}
 	else if (c <= 0x10FFFF)
 	{
 		return (ft_putchar_fd((c >> 18) + 0xF0, fd) == -1 ||
 				ft_putchar_fd(((c >> 12) & 0x3F) + 0x80, fd) == -1 ||
 				ft_putchar_fd(((c >> 6) & 0x3f) + 0x80, fd) == -1 ||
-				ft_putchar_fd((c & 0x3F) + 0x80, fd) == -1)		? -1 : 5;
+				ft_putchar_fd((c & 0x3F) + 0x80, fd) == -1)		? -1 : 4;
 	}
 	return (-1);
 }

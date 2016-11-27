@@ -20,6 +20,7 @@
 # include <stdarg.h>
 # include <stdbool.h>
 # include <stddef.h>
+# include <float.h>
 
 typedef char			t_case;
 # define CAPITAL		'A'
@@ -48,6 +49,7 @@ typedef struct			s_flags
 	bool				alternative;
 	bool				zero;
 	int 				field_width;
+	bool				spec_width;
 	int					precision;
 	bool				expl_precision;
 	bool				just_count;
@@ -60,13 +62,16 @@ typedef struct			s_flags
 
 # define ABS(x)			(x) < 0 ? -(x) : (x)
 
+int						(*g_formats[128])(t_flags *flags, va_list ap);
+
 int						ft_putchar_fd(char c, int fd);
 int						ft_putwchar_fd(wchar_t c, int fd);
-int						ft_putstr_fd(char const *s, int fd);
+void					ft_putstr_fd(char const *s, int fd);
 int						ft_putnstr_fd(char const *str, int fd, int length);
 int						ft_putwstr_fd(wchar_t const *str, int fd);
 int						ft_putnwstr_fd(wchar_t const *str, int fd, int length);
 size_t					ft_strlen(const char *s);
+size_t					ft_wstrlen(wchar_t *str);
 char					*ft_strdup(const char *s1);
 int						ft_isdigit(int c);
 int						ft_atoi(const char *str);
@@ -78,15 +83,37 @@ void					ft_write(const char *to_write, int size,
 								 t_flags *flags);
 t_flags					*new_flags(int fd, char format, bool just_count);
 t_flags					*flags_count(t_flags *flags);
-t_flags					*read_format(int fd, char **str, va_list ap);
+t_flags					*read_format(int fd, const char **str, va_list ap);
 void					format_before(t_flags *flags);
 void					format_after(t_flags *flags);
+int						switch_format(t_flags *flags, va_list ap);
+long double				get_value_feag(t_flags *flags, va_list ap);
+unsigned long long int	get_value_oxu(t_flags *flags, va_list ap);
+
+int 					ft_printf(const char *format, ...);
+int						ft_dprintf(int fd, const char *format, ...);
+int 					ft_vprintf(const char *format, va_list ap);
+int 					ft_vdprintf(int fd, const char *format, va_list ap);
+
+
+int						is_nan(long double nbr);
+int						is_inf(long double nbr);
 
 int						format_a(t_flags *flags, va_list ap); //TODO make array of functions
 int						format_c(t_flags *flags, va_list ap);
 int						format_d(t_flags *flags, va_list ap);
-int 					format_e(double nbr, t_flags *flags);
-int						format_s(char *str, t_flags *flags);
-int						format_S(wchar_t *str, t_flags *flags);
+int						format_i(t_flags *flags, va_list ap);
+int 					format_e(t_flags *flags, va_list ap);
+int						format_s(t_flags *flags, va_list ap);
+int 					format_o(t_flags *flags, va_list ap);
+int      			    format_u(t_flags *flags, va_list ap);
+int 					format_x(t_flags *flags, va_list ap);
+int 					format_p(t_flags *flags, va_list ap);
+int						format_percent(t_flags *flags, va_list ap);
+
+
+
+int 					ft_putpower(int power, t_flags *flags, int min_digits);
+long long				ft_power(int base, int power);
 
 #endif

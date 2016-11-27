@@ -33,7 +33,7 @@ void		ft_write(const char *to_write, int size, t_flags *flags)
 	if (flags->error)
 		return ;
 	if (flags->just_count == true)
-		flags->chars_wr += size;
+		flags->chars_val += size; //maybe add to chars_val
 	else if (flags->capital == true)
 	{
 		if (wr_cs(flags->fd, to_write, size) != size)

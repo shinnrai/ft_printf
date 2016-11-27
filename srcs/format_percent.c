@@ -1,18 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   format_i.c                                         :+:      :+:    :+:   */
+/*   format_percent.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/01 14:48:23 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/01 14:48:24 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/11/21 23:04:25 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/11/21 23:04:29 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
 
-int format_i(t_flags *flags, va_list ap)
+static int _format_percent(t_flags *flags)
 {
-	return (format_d(nbr, flags));
+	ft_write("%", 1, flags);
+	return (flags->error) ? -1 : flags->chars_wr;
+}
+
+int		format_percent(t_flags *flags, va_list ap)
+{
+	flags->chars_val = 1;
+	format_before(flags);
+	_format_percent(flags);
+	format_after(flags);
+	return (flags->chars_wr);
 }
