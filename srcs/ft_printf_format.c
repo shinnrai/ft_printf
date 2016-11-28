@@ -71,6 +71,6 @@ void	format_after(t_flags *flags) //TODO check if it's working
 
 int		switch_format(t_flags *flags, va_list ap) //TODO redo
 {
-	return (g_formats[flags->format](flags, ap));
+	return (g_formats[(int)flags->format](flags, ap));
 
 }

@@ -20,6 +20,7 @@ static int _format_percent(t_flags *flags)
 
 int		format_percent(t_flags *flags, va_list ap)
 {
+	(void)ap;
 	flags->chars_val = 1;
 	format_before(flags);
 	_format_percent(flags);

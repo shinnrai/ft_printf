@@ -6,7 +6,7 @@
 #    By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/26 12:41:24 by ofedorov          #+#    #+#              #
-#    Updated: 2016/11/05 13:12:06 by ofedorov         ###   ########.fr        #
+#    Updated: 2016/11/27 17:50:36 by ofedorov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,15 @@ NAME	=	libftprintf.a
 CC		=	gcc
 CFLAGS	=	-Wall -Werror -Wextra
 
-SRCSFL	+=	test_main.c
+SRCSFL	+=	format_a.c format_c.c format_d.c format_e.c  \
+			format_i.c format_o.c format_p.c format_percent.c \
+			format_s.c format_u.c format_x.c
+SRCSFL	+=	ft_printf.c ft_printf_format.c ft_printf_get_value.c \
+			ft_printf_read_format.c ft_write.c
+SRCSFL	+=	ft_atoi.c ft_isdigit.c\
+			ft_putchar_fd.c ft_putnbr_fd.c ft_putnstr_fd.c ft_putnwstr_fd.c \
+			ft_putstr_fd.c ft_putwchar_fd.c ft_putwstr_fd.c \
+			ft_strlen.c ft_strncpy_count.c ft_wstrlen.c
 
 SRCSFD	=	srcs
 OBJSFD	=	objs

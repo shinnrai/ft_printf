@@ -64,6 +64,8 @@ typedef struct			s_flags
 
 int						(*g_formats[128])(t_flags *flags, va_list ap);
 
+void					ft_bzero(void *s, size_t n);
+void					*ft_memset(void *b, int c, size_t len);
 int						ft_putchar_fd(char c, int fd);
 int						ft_putwchar_fd(wchar_t c, int fd);
 void					ft_putstr_fd(char const *s, int fd);
@@ -79,6 +81,7 @@ void					ft_putnbr_fd(int n, int fd); //TODO make length return
 
 size_t					ft_strncpy_count(char *dst, const char *src,
 										 size_t len);
+
 void					ft_write(const char *to_write, int size,
 								 t_flags *flags);
 t_flags					*new_flags(int fd, char format, bool just_count);

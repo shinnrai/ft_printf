@@ -12,8 +12,6 @@
 
 #include <libftprintf.h>
 
-const char	g_hex[17] = "0123456789abcdef"; //TODO move to libft
-
 unsigned long long	get_value_oxu(t_flags *flags, va_list ap)
 {
 	if (flags->length_mod == LEN_T)
@@ -40,7 +38,9 @@ static int	_format_o(unsigned long long nbr, t_flags *flags)
 	short		len;
 	ptrdiff_t	val;
 	char		c;
+	char		*hex;
 
+	hex = "0123456789abcdef";
 	val = nbr;
 	len = 1;
 	while (val >= 8)
@@ -50,7 +50,7 @@ static int	_format_o(unsigned long long nbr, t_flags *flags)
 	}
 	while (len-- != 0)
 	{
-		c = g_hex[(ABS((nbr / ft_power(16, len)) % 16))];; //TODO check for wtf value
+		c = hex[(ABS((nbr / ft_power(16, len)) % 16))];; //TODO check for wtf value
 		ft_write(&c, 1, flags);
 	}
 	return (flags->error) ? -1 : flags->chars_wr;

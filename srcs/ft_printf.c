@@ -86,5 +86,5 @@ int		ft_dprintf(int fd, const char *format, ...) //maybe add restrict
 	va_list	ap;
 
 	va_start(ap, format);
-	return (ft_vdprintf(1, format, ap));
+	return (ft_vdprintf(fd, format, ap));
 }

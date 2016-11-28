@@ -13,9 +13,6 @@
 
 #include <libftprintf.h>
 
-const char	g_hex[17] = "0123456789abcdef"; //TODO move to libft
-
-
 int	is_nan(long double nbr) //TODO move to libft
 {
 	return (nbr == nbr) ? 0 : 1;
@@ -98,14 +95,16 @@ static int	_format_a(long double nbr, t_flags *flags)
 {
 	int 	power;
 	int 	left;
+	char	*hex;
 
+	hex = "0123456789abcdef";
 	if (nbr < 0)
 		ft_write("-", 1, flags);
 	ft_write("0x", 2, flags);
 	power = get_power(&nbr);
 	power += round(&nbr, flags); //TODO test with min max
 	left = flags->precision;
-	ft_write(&g_hex[(int)nbr], 1, flags);
+	ft_write(&hex[(int)nbr], 1, flags);
 	if ((nbr != 0 && (nbr - (int)nbr != 0) && left != 0) || flags->alternative
 			|| flags->precision > 0) //maybe remove left == 0
 		ft_write(".", 1, flags);
@@ -113,7 +112,7 @@ static int	_format_a(long double nbr, t_flags *flags)
 			(left-- != 0 && flags->precision != -1))
 	{
 		nbr = (nbr - (int)nbr) * 16;
-		ft_write(&g_hex[(int)nbr], 1, flags);
+		ft_write(&hex[(int)nbr], 1, flags);
 	}
 	ft_write("p", 1, flags);
 	ft_putpower(power, flags, 1);

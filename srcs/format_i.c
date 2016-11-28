@@ -14,5 +14,5 @@
 
 int format_i(t_flags *flags, va_list ap)
 {
-	return (format_d(nbr, flags));
+	return (format_d(flags, ap));
 }

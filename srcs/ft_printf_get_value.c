@@ -29,9 +29,10 @@ unsigned long long int	get_value_oxu(t_flags *flags, va_list ap)
 	else if (flags->length_mod == LEN_NONE)
 		val = va_arg(ap, unsigned int);
 	else if (flags->length_mod == LEN_H)
-		val = va_arg(ap, unsigned short); //TODO check if working, if not, switch to cast
+		val = (unsigned short)va_arg(ap, unsigned int); //TODO check if working, if not, switch to cast
 	else if (flags->length_mod == LEN_HH)
-		val = va_arg(ap, unsigned char);
+		val = (unsigned char)va_arg(ap, unsigned int);
 	else
 		return (0);
+	return (val);
 }

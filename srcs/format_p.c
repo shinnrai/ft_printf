@@ -12,14 +12,14 @@
 
 #include <libftprintf.h>
 
-const char	g_hex[17] = "0123456789abcdef"; //TODO move to libft
-
 static int	_format_p(void *ptr, t_flags *flags)
 {
 	unsigned long long	val;
 	short				len;
 	char 				c;
+	char				*hex;
 
+	hex = "0123456789abcdef";
 	val = (unsigned long long)ptr;
 	ft_write("0x", 2, flags);
 	len = 1;
@@ -31,7 +31,7 @@ static int	_format_p(void *ptr, t_flags *flags)
 	val = (unsigned long long)ptr;
 	while (len-- != 0)
 	{
-		c = g_hex[(ABS((val / ft_power(16, len)) % 16))]; //TODO check for wtf value
+		c = hex[(ABS((val / ft_power(16, len)) % 16))]; //TODO check for wtf value
 		ft_write(&c, 1, flags);
 	}
 	return (flags->error) ? -1 : flags->chars_wr;
