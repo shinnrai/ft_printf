@@ -44,9 +44,11 @@ void	format_before(t_flags *flags)
 	int	spaces;
 
 	spaces = flags->field_width - flags->chars_val;
+	spaces -= (flags->sign || flags->space || !flags->positive) ? 1 : 0;
 	spaces += (flags->format == 'x' && flags->alternative ? 2 : 0);
 	if ((flags->format == 'd' || flags->format == 'o' || flags->format == 'x' ||
-		flags->format == 'u') && (flags->precision > flags->chars_val))
+		flags->format == 'u' || flags->format == 'i') &&
+			(flags->precision > flags->chars_val))
 		spaces -= flags->precision - flags->chars_val;
 	if (!flags->left_justified && flags->field_width != -1 && !flags->zero)
 		while (spaces-- > 0)
@@ -57,6 +59,8 @@ void	format_before(t_flags *flags)
 		ft_write(" ", 1, flags);
 	if (!flags->positive)
 		ft_write("-", 1, flags);
+	if ((flags->sign || flags->space || !flags->positive) && !flags->left_justified)
+		flags->field_width = (flags->field_width == -1) ? -1 : flags->field_width - 1;
 	//TODO check if something else need to be done here
 }
 

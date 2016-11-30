@@ -47,10 +47,10 @@ int 	format_x(t_flags *flags, va_list ap) //TODO check 0 precision and 0 value, 
 		flags->chars_val = 0;
 	flags->just_count = false;
 	format_before(flags);//putting '-' in format function
-	if (flags->alternative)
+	if (flags->alternative && val != 0)
 		ft_write("0x", 2, flags);
 	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
-	if (precision != 0)
+	if (precision != 0 && (flags->zero || flags->precision != -1))
 		while (precision-- - flags->chars_val > 0)
 			ft_write("0", 1, flags);
 	if (flags->precision != 0 || val != 0 || flags->alternative)

@@ -31,7 +31,20 @@ int	main(void)
 	//printf("\n%zu", format_A(par));
 
 	//double a = 1. / 0;
-	printf(">%.d<", 0);
+	printf("\n%d\n",        printf("library:\t>%c<", 227));
+	printf("\n%d\n", ft_dprintf(1, "mine:   \t>%c<", 227));
+//	printf("\n%d\n",        printf("library:\t>% -25.10A<", 3.55555500000001));
+//	printf("\n%d\n", ft_dprintf(1, "mine:   \t>% -25.10A<", 3.55555500000001));
+//
+//	printf("\n%d\n",        printf("library:\t>% -25.16A<", 3.555555000000001));
+//	printf("\n%d\n", ft_dprintf(1, "mine:   \t>% -25.16A<", 3.555555000000001));
+//	printf("\n%d\n",        printf("library:\t>% -25.10A<", 3.555555000000001));
+//	printf("\n%d\n", ft_dprintf(1, "mine:   \t>% -25.10A<", 3.555555000000001));
+
+//	printf("library:\t>% -25.10A<\n", 3.55555500000001);
+//	printf("library:\t>% -25.16A<\n", 3.55555500000001);
+//	printf("library:\t>% -25.10A<\n", 3.555555000000001);
+//	printf("library:\t>% -25.16A<\n", 3.555555000000001);
 }
 
 //p: - , field width

@@ -56,10 +56,11 @@ int 	ft_printf(const char *format, ...)
 
 int 	ft_vdprintf(int fd, const char *format, va_list ap)
 {
-	int		chars_wr;
+	int			chars_wr;
 	t_flags	*flags;
 
 	chars_wr = 0;
+	setlocale(LC_ALL, "");
 	setup_formats();
 	if (!format)
 		exit(11); //TODO check
@@ -68,7 +69,12 @@ int 	ft_vdprintf(int fd, const char *format, va_list ap)
 		if (*format == '%')
 		{
 			flags = read_format(fd, &format, ap);
-			if (flags->error)
+			if (flags->format == '?') // <----- error
+			{
+				//format++;
+				continue;
+			}
+			else if (flags->error)
 				display_error(flags->error);
 			chars_wr += switch_format(flags, ap);
 			if (flags->error)

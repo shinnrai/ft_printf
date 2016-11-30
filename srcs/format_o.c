@@ -50,7 +50,7 @@ static int	_format_o(unsigned long long nbr, t_flags *flags)
 	}
 	while (len-- != 0)
 	{
-		c = hex[(ABS((nbr / ft_power(16, len)) % 16))];; //TODO check for wtf value
+		c = '0' + (ABS((nbr / ft_power(8, len)) % 8)); //TODO check for wtf value
 		ft_write(&c, 1, flags);
 	}
 	return (flags->error) ? -1 : flags->chars_wr;
@@ -69,10 +69,12 @@ int 	format_o(t_flags *flags, va_list ap) //TODO check 0 precision and 0 value, 
 	flags->just_count = false;
 	format_before(flags);//putting '-' in format function
 	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
-	if (precision != 0)
+	if (precision != 0 && (flags->zero || flags->precision != -1))
 		while (precision-- - flags->chars_val > 0)
 			ft_write("0", 1, flags);
-	if (flags->precision != 0 || val != 0 || flags->alternative)
+	if (flags->alternative && val != 0)
+		ft_write("0", 1, flags);
+	if (flags->precision != 0 || val != 0)
 		flags->chars_wr = _format_o(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);

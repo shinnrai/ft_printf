@@ -23,7 +23,7 @@ static int		_format_s(wchar_t *str, t_flags *flags)
 	written = 0;
 	if (flags->just_count)
 	{
-		if (flags->precision != -1)
+		if (flags->precision >= 0)
 			written = MIN(flags->precision, (int)ft_wstrlen(str));
 		else
 			while (*str++)
@@ -49,10 +49,12 @@ static wchar_t	*ft_str_to_wstr(char *str)
 	wchar_t	*wstr;
 	int		len;
 
+	if (str == NULL)
+		return (NULL);
 	len = ft_strlen(str);
 	wstr = (wchar_t*)malloc(sizeof(wchar_t) * (len + 1));
 	wstr[len] = '\0';
-	while (len-- >= 0)
+	while (len-- > 0)
 		wstr[len] = (wchar_t)str[len];
 	return (wstr);
 }
@@ -72,10 +74,17 @@ int 			format_s(t_flags *flags, va_list ap)
 
 	val = get_value(flags, ap);
 	flags->just_count = true;
-	_format_s(val, flags);
+	if (val == NULL)
+		flags->chars_val = 6;
+	else
+		_format_s(val, flags);
 	flags->just_count = false;
 	format_before(flags);
-	_format_s(val, flags);
+	if (val == NULL)
+		ft_write("(null)", (flags->precision >= 0 && flags->precision < 6) ?
+				flags->precision : 6, flags);
+	else
+		_format_s(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);
 }

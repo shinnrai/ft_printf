@@ -21,7 +21,6 @@ static int	_format_p(void *ptr, t_flags *flags)
 
 	hex = "0123456789abcdef";
 	val = (unsigned long long)ptr;
-	ft_write("0x", 2, flags);
 	len = 1;
 	while (val >= 16)
 	{
@@ -41,21 +40,23 @@ static int	_format_p(void *ptr, t_flags *flags)
 int format_p(t_flags *flags, va_list ap)
 {
 	void				*val;
+	int 				precision;
 
 	val = va_arg(ap, void *);
 	flags->just_count = true;
 	_format_p(val, flags);
-	if (flags->precision == 0 && val == 0)
-		flags->chars_val = 2;
+	flags->chars_val = 2;
 	flags->just_count = false;
 	format_before(flags);//putting '-' in format function
+	precision = flags->precision;
+	ft_write("0x", 2, flags);
+	if (flags->zero || flags->precision != -1)
+		while (precision-- - flags->chars_val > 0)
+			ft_write("0", 1, flags);
 	if (flags->precision != 0 || val != 0)
 		flags->chars_wr = _format_p(val, flags);
 	else
-	{
-		ft_write("0x", 2, flags);
 		flags->chars_wr = (flags->error) ? -1 : flags->chars_wr;
-	}
 	format_after(flags);
 	return (flags->chars_wr);
 }

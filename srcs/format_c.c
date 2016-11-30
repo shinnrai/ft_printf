@@ -34,10 +34,14 @@ static int	_format_c(wint_t c, t_flags *flags) //TODO check if is working with j
 			flags->chars_val = 4;
 		else
 			flags->error = "value exceeds Unicode";
+		if (flags->length_mod == LEN_NONE)
+			flags->chars_val = 1;
 	}
 	else
 	{
 		written = ft_putwchar_fd(c, flags->fd);
+		if (flags->length_mod == LEN_NONE)
+			written = 1;
 		flags->error = (written < 0) ? "can't write to file descriptor" :
 					   flags->error;
 		flags->chars_wr += written;
