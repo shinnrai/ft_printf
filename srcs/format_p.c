@@ -15,7 +15,7 @@
 static int	_format_p(void *ptr, t_flags *flags)
 {
 	unsigned long long	val;
-	short				len;
+	int					len;
 	char 				c;
 	char				*hex;
 
@@ -28,7 +28,11 @@ static int	_format_p(void *ptr, t_flags *flags)
 		len++;
 	}
 	val = (unsigned long long)ptr;
-	while (len-- != 0)
+	if (flags->precision > len)
+		len = flags->precision;
+	if (flags->precision == 0 && val == 0)
+		len = 0;
+	while (len-- > 0)
 	{
 		c = hex[(ABS((val / ft_power(16, len)) % 16))]; //TODO check for wtf value
 		ft_write(&c, 1, flags);
@@ -45,7 +49,8 @@ int format_p(t_flags *flags, va_list ap)
 	val = va_arg(ap, void *);
 	flags->just_count = true;
 	_format_p(val, flags);
-	flags->chars_val = 2;
+	flags->precision = ((flags->chars_val > flags->precision) && val != NULL) ? -1 : flags->precision;
+	flags->chars_val += 2;
 	flags->just_count = false;
 	format_before(flags);//putting '-' in format function
 	precision = flags->precision;

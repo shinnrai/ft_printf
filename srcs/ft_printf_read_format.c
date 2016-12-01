@@ -97,29 +97,27 @@ void	check_length_mod(t_flags *flags, char **format)
 
 void	check_field_width(t_flags *flags, char **format, va_list ap)
 {
-	if (**format == '*')
-	{
-		flags->field_width = va_arg(ap, int); //TODO maybe check for error
-		if (flags->field_width < 0)
-			flags->left_justified = true;
-		flags->field_width = ABS(flags->field_width);
-		flags->spec_width = true;
-	}
-	else if (ft_isdigit(**format))
+	if (ft_isdigit(**format))
 	{
 		flags->field_width = ft_atoi(*format);
 		flags->spec_width = true;
 	}
-	if (flags->spec_width && flags->field_width < 0)
+	if (ft_isdigit(**format))
+		while (ft_isdigit(**format))
+			(*format)++;
+	if (**format == '*')
 	{
-		flags->left_justified = true;
-		flags->field_width = -(flags->field_width);
+		flags->field_width = va_arg(ap, int); //TODO maybe check for error
+		flags->spec_width = true;
 	}
 	if (**format == '*')
 		(*format)++;
-	else if (ft_isdigit(**format))
-		while (ft_isdigit(**format))
-			(*format)++;
+	if (flags->spec_width && flags->field_width < 0)
+	{
+		flags->left_justified = true;
+		flags->zero = false;
+		flags->field_width = -(flags->field_width);
+	}
 }
 
 void	determine_format(t_flags *flags, char **f)
@@ -185,10 +183,10 @@ void	assign_false(int number, ...)
 void	check_specific_f(t_flags *flags)
 {
 	if (flags->format == 'c')
-		assign_false(5, &flags->expl_precision, &flags->sign, &flags->space,
-		&flags->alternative, &flags->zero);
+		assign_false(4, &flags->expl_precision, &flags->sign, &flags->space,
+		&flags->alternative);
 	else if (flags->format == 's')
-		assign_false(4, &flags->sign, &flags->space, &flags->zero, &flags->alternative);
+		assign_false(3, &flags->sign, &flags->space, &flags->alternative);
 	else if	(flags->format == 'd' || flags->format == 'i')
 		assign_false(1, &flags->alternative);
 	else if (flags->format == 'o' || flags->format == 'x' ||
@@ -204,7 +202,12 @@ void	check_specific_f(t_flags *flags)
 		flags->field_width = -1;
 	}
 	else if (flags->format == 'p')
-		assign_false(5, &flags->sign, &flags->space, &flags->zero, &flags->alternative, &flags->expl_precision);
+	{
+		if (flags->zero)
+			flags->precision = (flags->field_width >= 2) ? flags->field_width - 2 : flags->precision;
+		assign_false(5, &flags->sign, &flags->zero, &flags->space, &flags->alternative,
+					 &flags->expl_precision);
+	}
 
 }
 

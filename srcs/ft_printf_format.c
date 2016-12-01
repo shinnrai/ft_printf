@@ -42,6 +42,7 @@ t_flags	*new_flags(int fd, char format, bool just_count)
 void	format_before(t_flags *flags)
 {
 	int	spaces;
+	int	precision;
 
 	spaces = flags->field_width - flags->chars_val;
 	spaces -= (flags->sign || flags->space || !flags->positive) ? 1 : 0;
@@ -61,6 +62,12 @@ void	format_before(t_flags *flags)
 		ft_write("-", 1, flags);
 	if ((flags->sign || flags->space || !flags->positive) && !flags->left_justified)
 		flags->field_width = (flags->field_width == -1) ? -1 : flags->field_width - 1;
+	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
+	if (precision != 0 && (flags->zero || ((flags->format == 'd' ||
+		flags->format == 'i' || flags->format == 'o' || flags->format == 'u' ||
+		flags->format == 'x') && flags->precision != -1)))
+		while (precision-- - flags->chars_val > 0)
+			ft_write("0", 1, flags);
 	//TODO check if something else need to be done here
 }
 

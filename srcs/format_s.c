@@ -75,7 +75,8 @@ int 			format_s(t_flags *flags, va_list ap)
 	val = get_value(flags, ap);
 	flags->just_count = true;
 	if (val == NULL)
-		flags->chars_val = 6;
+		flags->chars_val = (flags->precision >= 0 && flags->precision <=6) ?
+				flags->precision : 6;
 	else
 		_format_s(val, flags);
 	flags->just_count = false;

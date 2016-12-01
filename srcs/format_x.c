@@ -38,7 +38,6 @@ static int	_format_x(unsigned long long nbr, t_flags *flags)
 int 	format_x(t_flags *flags, va_list ap) //TODO check 0 precision and 0 value, also alternative
 {
 	unsigned long long	val;
-	int 				precision;
 
 	val = get_value_oxu(flags, ap);
 	flags->just_count = true;
@@ -49,10 +48,6 @@ int 	format_x(t_flags *flags, va_list ap) //TODO check 0 precision and 0 value, 
 	format_before(flags);//putting '-' in format function
 	if (flags->alternative && val != 0)
 		ft_write("0x", 2, flags);
-	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
-	if (precision != 0 && (flags->zero || flags->precision != -1))
-		while (precision-- - flags->chars_val > 0)
-			ft_write("0", 1, flags);
 	if (flags->precision != 0 || val != 0 || flags->alternative)
 		_format_x(val, flags);
 	format_after(flags);

@@ -69,7 +69,6 @@ static ptrdiff_t	get_value(t_flags *flags, va_list ap)
 int          format_d(t_flags *flags, va_list ap)
 {
 	ptrdiff_t	val;
-	int 		precision;
 
 	val = get_value(flags, ap);
 	flags->just_count = true;
@@ -79,10 +78,6 @@ int          format_d(t_flags *flags, va_list ap)
 	flags->just_count = false;
 	flags->positive = (val < 0) ? false : true;
 	format_before(flags);//putting '-' in format function
-	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
-	if (precision != 0 && (flags->zero || flags->precision != -1))
-		while (precision-- - flags->chars_val > 0)
-			ft_write("0", 1, flags);
 	if (flags->precision != 0 || val != 0)
 		flags->chars_wr = _format_d(val, flags);
 	format_after(flags);
