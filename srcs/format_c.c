@@ -39,7 +39,7 @@ static int	_format_c(wint_t c, t_flags *flags) //TODO check if is working with j
 	}
 	else
 	{
-		written = ft_putwchar_fd(c, flags->fd);
+		written = (flags->length_mod == LEN_NONE) ? ft_putchar_fd(c, flags->fd) : ft_putwchar_fd(c, flags->fd);
 		if (flags->length_mod == LEN_NONE)
 			written = 1;
 		flags->error = (written < 0) ? "can't write to file descriptor" :

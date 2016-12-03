@@ -134,24 +134,17 @@ void	determine_format(t_flags *flags, char **f)
 	else if (**f == 'C' || **f == 'S' || **f == 'D' || **f == 'O' || **f == 'U')
 	{
 		flags->format = **f - ('A' - 'a');
-		if (flags->length_mod != LEN_NONE)
-			flags->error = "cannot use length modifiers with this format";
 		flags->length_mod = LEN_L;
 	}
-	else if (**f == '%')
-		flags->format = '%';
 	else
-	{
-		flags->format = '?'; // <----- error
-		flags->error = "unknown format";
-	}
+		flags->format = **f;
 }
 
 static void	check_l_mod(t_flags *flags)
 {
 	int ret;
 
-	ret = 0;
+	ret = 2;
 	if (flags->format == 'c' || flags->format == 's')
 		ret = g_cs[flags->length_mod];
 	if (flags->format == 'd' || flags->format == 'i' || flags->format == 'o' ||
@@ -162,9 +155,8 @@ static void	check_l_mod(t_flags *flags)
 		ret = g_feag[flags->length_mod];
 	if (flags->format == 'p' || flags->format == '%')
 		ret = g_pCS_perc[flags->length_mod];
-	if (ret == 0 && flags->format != 0)
-		flags->error = "cannot use this length modifier "
-				"with this format";
+	if (ret == 0)
+		flags->format = LEN_NONE;
 }
 
 void	assign_false(int number, ...)
@@ -184,7 +176,7 @@ void	check_specific_f(t_flags *flags)
 {
 	if (flags->format == 'c')
 		assign_false(4, &flags->expl_precision, &flags->sign, &flags->space,
-		&flags->alternative);
+					 &flags->alternative);
 	else if (flags->format == 's')
 		assign_false(3, &flags->sign, &flags->space, &flags->alternative);
 	else if	(flags->format == 'd' || flags->format == 'i')
@@ -203,11 +195,16 @@ void	check_specific_f(t_flags *flags)
 	}
 	else if (flags->format == 'p')
 	{
-		if (flags->zero)
+		if (flags->zero && flags->precision == -1)
 			flags->precision = (flags->field_width >= 2) ? flags->field_width - 2 : flags->precision;
 		assign_false(5, &flags->sign, &flags->zero, &flags->space, &flags->alternative,
 					 &flags->expl_precision);
 	}
+	else if (!supported_format(flags->format))
+		assign_false(2, &flags->space, &flags->sign);
+	if ((flags->format == 'd' || flags->format == 'i' || flags->format == 'x' ||
+			flags->format == 'u' || flags->format == 'o') && flags->precision != -1)
+		assign_false(1, &flags->zero);
 
 }
 

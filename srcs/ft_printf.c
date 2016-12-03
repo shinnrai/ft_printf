@@ -12,6 +12,15 @@
 
 #include <libftprintf.h>
 
+int	supported_format(char c)
+{
+	if (c == 'c' || c == 's' || c == 'd' || c == 'i' || c == 'o' ||
+		c == 'x' || c == 'u' || c == 'f' || c == 'e' || c == 'a' ||
+		c == 'g' || c == 'n' || c == 'p')
+		return (1);
+	return (0);
+}
+
 static void	write_count(int fd, const char *str, int size, int *ch)
 {
 	int ret = write(fd, str, size);
@@ -27,6 +36,11 @@ void	display_error(const char *str) //TODO move to libft
 
 static void	setup_formats(void)
 {
+	int	i;
+
+	i = -1;
+	while (++i < 128)
+		g_formats[i] = NULL;
 	g_formats['a'] = format_a;
 	g_formats['c'] = format_c;
 	g_formats['d'] = format_d;
@@ -38,7 +52,7 @@ static void	setup_formats(void)
 	g_formats['u'] = format_u;
 	g_formats['x'] = format_x;
 	g_formats['p'] = format_p;
-	g_formats['%'] = format_percent;
+	g_formats['?'] = format_another;
 }
 
 int 	ft_vprintf(const char *format, va_list ap)
@@ -69,13 +83,8 @@ int 	ft_vdprintf(int fd, const char *format, va_list ap)
 		if (*format == '%')
 		{
 			flags = read_format(fd, &format, ap);
-			if (flags->format == '?') // <----- error
-			{
-				//format++;
-				continue;
-			}
-			else if (flags->error)
-				display_error(flags->error);
+			if (flags->error)
+				display_error(flags->error); //TODO probably remove
 			chars_wr += switch_format(flags, ap);
 			if (flags->error)
 				display_error(flags->error);

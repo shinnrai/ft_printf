@@ -92,6 +92,7 @@ void					format_after(t_flags *flags);
 int						switch_format(t_flags *flags, va_list ap);
 long double				get_value_feag(t_flags *flags, va_list ap);
 unsigned long long int	get_value_oxu(t_flags *flags, va_list ap);
+int						supported_format(char c);
 
 int 					ft_printf(const char *format, ...);
 int						ft_dprintf(int fd, const char *format, ...);
@@ -112,7 +113,7 @@ int 					format_o(t_flags *flags, va_list ap);
 int      			    format_u(t_flags *flags, va_list ap);
 int 					format_x(t_flags *flags, va_list ap);
 int 					format_p(t_flags *flags, va_list ap);
-int						format_percent(t_flags *flags, va_list ap);
+int						format_another(t_flags *flags, va_list ap); //TODO rename the file
 
 
 

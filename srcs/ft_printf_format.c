@@ -12,8 +12,6 @@
 
 #include <libftprintf.h>
 
-#define is_dioxu(c) c == 'd' || c == 'i' || c == 'o' || c == 'x' || c == 'u'
-
 t_flags	*new_flags(int fd, char format, bool just_count)
 {
 	t_flags	*flags;
@@ -63,9 +61,12 @@ void	format_before(t_flags *flags)
 	if ((flags->sign || flags->space || !flags->positive) && !flags->left_justified)
 		flags->field_width = (flags->field_width == -1) ? -1 : flags->field_width - 1;
 	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
+	if (!(flags->format == 'd' || flags->format == 'i' || flags->format == 'o'
+		  || flags->format == 'u' || flags->format == 'x'))
+		precision = flags->field_width;
 	if (precision != 0 && (flags->zero || ((flags->format == 'd' ||
-		flags->format == 'i' || flags->format == 'o' || flags->format == 'u' ||
-		flags->format == 'x') && flags->precision != -1)))
+		flags->format == 'i' || flags->format == 'o' || flags->format == 'u')
+										   && flags->precision != -1)))
 		while (precision-- - flags->chars_val > 0)
 			ft_write("0", 1, flags);
 	//TODO check if something else need to be done here
@@ -82,6 +83,7 @@ void	format_after(t_flags *flags) //TODO check if it's working
 
 int		switch_format(t_flags *flags, va_list ap) //TODO redo
 {
-	return (g_formats[(int)flags->format](flags, ap));
-
+	if (supported_format(flags->format))
+		return (g_formats[(int)flags->format](flags, ap));
+	return (g_formats[(int)'?'](flags, ap));
 }

@@ -63,13 +63,13 @@ int 	format_o(t_flags *flags, va_list ap) //TODO check 0 precision and 0 value, 
 	val = get_value_oxu(flags, ap);
 	flags->just_count = true;
 	_format_o(val, flags);
-	if (flags->precision == 0 && val == 0)
+	if (flags->precision == 0 && val == 0 && !flags->alternative)
 		flags->chars_val = 0;
 	flags->just_count = false;
 	format_before(flags);//putting '-' in format function
-	if (flags->alternative && val != 0)
+	if (flags->alternative && val != 0 && flags->precision <= flags->chars_val + 1)
 		ft_write("0", 1, flags);
-	if (flags->precision != 0 || val != 0)
+	if (flags->precision != 0 || val != 0 || flags->alternative)
 		flags->chars_wr = _format_o(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);
