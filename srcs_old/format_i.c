@@ -1,24 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnwstr_fd.c                                   :+:      :+:    :+:   */
+/*   format_i.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/11 16:25:34 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/11 16:25:36 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/11/01 14:48:23 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/11/01 14:48:24 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
 
-int		ft_putnwstr_fd(wchar_t const *str, int fd, int length) //check ret value
+int format_i(t_flags *flags, va_list ap)
 {
-	int i;
-	int	ret;
-
-	i = 0;
-	while (str && *str && i != -1 && i + ft_wcharlen(*str) <= length)
-		i = ((ret = ft_putwchar_fd(*str++, fd)) != -1) ? i + ret : -1;
-	return (str == NULL) ? -1 : i;
+	return (format_d(flags, ap));
 }

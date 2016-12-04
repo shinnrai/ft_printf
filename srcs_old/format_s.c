@@ -16,33 +16,7 @@
 #define MIN(x, y) (x) <= (y) ? (x) : (y)
 #define MAX(x, y) (x) > (y) ? (x) : (y)
 
-int				ft_wcharlen(wchar_t wc)
-{
-	if (wc <= 0x7F)
-		return (1);
-	if (wc <= 0x7FF)
-		return (2);
-	if (wc <= 0xFFFF)
-		return (3);
-	if (wc <= 0x10FFFF)
-		return (4);
-	return (0);
-}
-
-static int		wchars_in_len(wchar_t *str, int len)
-{
-	int	n;
-
-	n = 0;
-	while (str && *str && n + ft_wcharlen(*str) <= len)
-	{
-		n += ft_wcharlen(*str);
-		str++;
-	}
-	return (n);
-}
-
-static int		_format_s(void *str, t_flags *flags)
+static int		_format_s(wchar_t *str, t_flags *flags)
 {
 	int	written;
 
@@ -50,18 +24,18 @@ static int		_format_s(void *str, t_flags *flags)
 	if (flags->just_count)
 	{
 		if (flags->precision >= 0)
-			flags->chars_val = MIN(flags->precision, flags->length_mod == LEN_NONE ?
-			(int)ft_strlen(str) : wchars_in_len(str, flags->precision)); //TODO diff wstrlen and strlen
+			written = MIN(flags->precision, (int)ft_wstrlen(str));
 		else
-			flags->chars_val = (flags->length_mod == LEN_NONE) ? ft_strlen((char*)str)
-					: ft_wstrlen((wchar_t*)str);
+			while (*str++)
+				written++;
+		flags->chars_val = written;
 	}
 	else
 	{
 		if (flags->precision != -1)
-			written = (flags->length_mod == LEN_NONE) ? ft_putnstr_fd(str, flags->fd, flags->precision) : ft_putnwstr_fd(str, flags->fd, flags->precision);
+			written = ft_putnwstr_fd(str, flags->fd, flags->precision);
 		else
-			written = (flags->length_mod == LEN_NONE) ? ft_putstr_fd(str, flags->fd) : ft_putwstr_fd(str, flags->fd);
+			written = ft_putwstr_fd(str, flags->fd);
 		flags->chars_wr += written;
 	}
 	if (written < 0)
@@ -69,23 +43,39 @@ static int		_format_s(void *str, t_flags *flags)
 	return (flags->error) ? -1 : flags->chars_wr;
 }
 
-static void	*get_value(t_flags *flags, va_list ap)
+//TODO move to libft
+static wchar_t	*ft_str_to_wstr(char *str)
+{
+	wchar_t	*wstr;
+	int		len;
+
+	if (str == NULL)
+		return (NULL);
+	len = ft_strlen(str);
+	wstr = (wchar_t*)malloc(sizeof(wchar_t) * (len + 1));
+	wstr[len] = '\0';
+	while (len-- > 0)
+		wstr[len] = (wchar_t)str[len];
+	return (wstr);
+}
+
+static wchar_t	*get_value(t_flags *flags, va_list ap)
 {
 	if (flags->length_mod == LEN_L)
 		return (va_arg(ap, wchar_t*));
 	if (flags->length_mod == LEN_NONE)
-		return (va_arg(ap, char*));
+		return (ft_str_to_wstr(va_arg(ap, char*)));
 	return (NULL);
 }
 
 int 			format_s(t_flags *flags, va_list ap)
 {
-	void	*val;
+	wchar_t	*val;
 
 	val = get_value(flags, ap);
 	flags->just_count = true;
 	if (val == NULL)
-		flags->chars_val = (flags->precision >= 0 && flags->precision <= 6) ?
+		flags->chars_val = (flags->precision >= 0 && flags->precision <=6) ?
 				flags->precision : 6;
 	else
 		_format_s(val, flags);

@@ -12,12 +12,33 @@
 
 #include <libftprintf.h>
 
+unsigned long long	get_value_oxu(t_flags *flags, va_list ap)
+{
+	if (flags->length_mod == LEN_T)
+		return (unsigned long long)va_arg(ap, ptrdiff_t);
+	if (flags->length_mod == LEN_Z)
+		return (unsigned long long)va_arg(ap, size_t);
+	if (flags->length_mod == LEN_J)
+		return (unsigned long long)va_arg(ap, uintmax_t);
+	if (flags->length_mod == LEN_LL)
+		return (unsigned long long)va_arg(ap, unsigned long long);
+	if (flags->length_mod == LEN_L)
+		return (unsigned long long)va_arg(ap, unsigned long);
+	if (flags->length_mod == LEN_NONE)
+		return (unsigned long long)va_arg(ap, unsigned int);
+	if (flags->length_mod == LEN_H)
+		return (unsigned long long)(unsigned short)va_arg(ap, int);
+	if (flags->length_mod == LEN_HH)
+		return (unsigned long long)(unsigned char)va_arg(ap, int);
+	return (0);
+}
+
 static int	_format_o(unsigned long long nbr, t_flags *flags)
 {
-	short				len;
-	unsigned long long	val;
-	char				c;
-	char				*hex;
+	short		len;
+	ptrdiff_t	val;
+	char		c;
+	char		*hex;
 
 	hex = "0123456789abcdef";
 	val = nbr;

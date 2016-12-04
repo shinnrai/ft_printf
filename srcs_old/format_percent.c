@@ -1,24 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnwstr_fd.c                                   :+:      :+:    :+:   */
+/*   format_percent.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/11 16:25:34 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/11 16:25:36 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/11/21 23:04:25 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/11/21 23:04:29 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
 
-int		ft_putnwstr_fd(wchar_t const *str, int fd, int length) //check ret value
+static int _format_other(t_flags *flags)
 {
-	int i;
-	int	ret;
+	ft_write(&flags->format, 1, flags);
+	return (flags->error) ? -1 : flags->chars_wr;
+}
 
-	i = 0;
-	while (str && *str && i != -1 && i + ft_wcharlen(*str) <= length)
-		i = ((ret = ft_putwchar_fd(*str++, fd)) != -1) ? i + ret : -1;
-	return (str == NULL) ? -1 : i;
+int		format_another(t_flags *flags, va_list ap)
+{
+	(void)ap;
+	flags->chars_val = 1;
+	format_before(flags);
+	_format_other(flags);
+	format_after(flags);
+	return (flags->chars_wr);
 }

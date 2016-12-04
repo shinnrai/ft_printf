@@ -12,8 +12,13 @@
 
 #include <libftprintf.h>
 
-void	ft_putstr_fd(char const *s, int fd)
+int	ft_putstr_fd(char const *s, int fd)
 {
-	while (s && *s)
-		ft_putchar_fd(*s++, fd);
+	int i;
+	int	ret;
+
+	i = 0;
+	while (s && *s && i != -1)
+		i = ((ret = ft_putchar_fd(*s++, fd)) != -1) ? i + ret : -1;
+	return (s == NULL) ? -1 : i;
 }

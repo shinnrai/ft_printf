@@ -17,7 +17,10 @@ size_t	ft_wstrlen(wchar_t *str)
 	size_t	len;
 
 	len = 0;
-	while (*str++)
-		len++;
+	while (*str)
+	{
+		len += ft_wcharlen(*str);
+		str++;
+	}
 	return (len);
 }

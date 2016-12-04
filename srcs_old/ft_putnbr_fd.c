@@ -1,24 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnwstr_fd.c                                   :+:      :+:    :+:   */
+/*   ft_putnbr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/11 16:25:34 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/11 16:25:36 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/09/26 19:53:50 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/09/30 15:06:34 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
 
-int		ft_putnwstr_fd(wchar_t const *str, int fd, int length) //check ret value
+void	ft_putnbr_fd(int n, int fd)
 {
-	int i;
-	int	ret;
-
-	i = 0;
-	while (str && *str && i != -1 && i + ft_wcharlen(*str) <= length)
-		i = ((ret = ft_putwchar_fd(*str++, fd)) != -1) ? i + ret : -1;
-	return (str == NULL) ? -1 : i;
+	if (n < 0)
+	{
+		ft_putchar_fd('-', fd);
+		if (n < -9)
+			ft_putnbr_fd(-(n / 10), fd);
+		ft_putchar_fd('0' - (n - (n / 10) * 10), fd);
+	}
+	else if (n > 9)
+	{
+		ft_putnbr_fd(n / 10, fd);
+		ft_putchar_fd('0' + n % 10, fd);
+	}
+	else
+		ft_putchar_fd('0' + n, fd);
 }

@@ -68,7 +68,7 @@ void					ft_bzero(void *s, size_t n);
 void					*ft_memset(void *b, int c, size_t len);
 int						ft_putchar_fd(char c, int fd);
 int						ft_putwchar_fd(wchar_t c, int fd);
-void					ft_putstr_fd(char const *s, int fd);
+int						ft_putstr_fd(char const *s, int fd);
 int						ft_putnstr_fd(char const *str, int fd, int length);
 int						ft_putwstr_fd(wchar_t const *str, int fd);
 int						ft_putnwstr_fd(wchar_t const *str, int fd, int length);
@@ -78,9 +78,7 @@ char					*ft_strdup(const char *s1);
 int						ft_isdigit(int c);
 int						ft_atoi(const char *str);
 void					ft_putnbr_fd(int n, int fd); //TODO make length return
-
-size_t					ft_strncpy_count(char *dst, const char *src,
-										 size_t len);
+int						ft_wcharlen(wchar_t wc);
 
 void					ft_write(const char *to_write, int size,
 								 t_flags *flags);

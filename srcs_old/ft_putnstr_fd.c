@@ -1,24 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnwstr_fd.c                                   :+:      :+:    :+:   */
+/*   ft_putnstr_fd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/11 16:25:34 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/11 16:25:36 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/11/11 16:25:43 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/11/11 16:25:45 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
 
-int		ft_putnwstr_fd(wchar_t const *str, int fd, int length) //check ret value
+int	ft_putnstr_fd(char const *str, int fd, int length)
 {
 	int i;
-	int	ret;
 
 	i = 0;
-	while (str && *str && i != -1 && i + ft_wcharlen(*str) <= length)
-		i = ((ret = ft_putwchar_fd(*str++, fd)) != -1) ? i + ret : -1;
+	while (str && *str && i != -1 && length-- > 0)
+		i = (ft_putchar_fd(*str++, fd) == 1) ? i + 1 : -1;
 	return (str == NULL) ? -1 : i;
 }

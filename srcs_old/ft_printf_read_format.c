@@ -97,25 +97,21 @@ void	check_length_mod(t_flags *flags, char **format)
 
 void	check_field_width(t_flags *flags, char **format, va_list ap)
 {
-	if (**format == '*')
-	{
-		flags->field_width = va_arg(ap, int); //TODO maybe check for error
-		flags->spec_width = true;
-		(*format)++;
-	}
 	if (ft_isdigit(**format))
 	{
 		flags->field_width = ft_atoi(*format);
 		flags->spec_width = true;
+	}
+	if (ft_isdigit(**format))
 		while (ft_isdigit(**format))
 			(*format)++;
-	}
 	if (**format == '*')
 	{
 		flags->field_width = va_arg(ap, int); //TODO maybe check for error
 		flags->spec_width = true;
-		(*format)++;
 	}
+	if (**format == '*')
+		(*format)++;
 	if (flags->spec_width && flags->field_width < 0)
 	{
 		flags->left_justified = true;
@@ -160,7 +156,7 @@ static void	check_l_mod(t_flags *flags)
 	if (flags->format == 'p' || flags->format == '%')
 		ret = g_pCS_perc[flags->length_mod];
 	if (ret == 0)
-		flags->length_mod = LEN_NONE;
+		flags->format = LEN_NONE;
 }
 
 void	assign_false(int number, ...)

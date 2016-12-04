@@ -14,7 +14,8 @@
 
 static int _format_other(t_flags *flags)
 {
-	ft_write(&flags->format, 1, flags);
+	if (flags->format)
+		ft_write(&flags->format, 1, flags);
 	return (flags->error) ? -1 : flags->chars_wr;
 }
 

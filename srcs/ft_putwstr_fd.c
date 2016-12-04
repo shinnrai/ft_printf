@@ -19,6 +19,6 @@ int		ft_putwstr_fd(wchar_t const *str, int fd)
 
 	i = 0;
 	while (str && *str && i != -1)
-		i = ((ret = ft_putchar_fd(*str++, fd)) != -1) ? i + ret : -1;
+		i = ((ret = ft_putwchar_fd(*str++, fd)) != -1) ? i + ret : -1;
 	return (str == NULL) ? -1 : i;
 }

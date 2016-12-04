@@ -6,7 +6,7 @@
 #    By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/26 12:41:24 by ofedorov          #+#    #+#              #
-#    Updated: 2016/11/27 17:50:36 by ofedorov         ###   ########.fr        #
+#    Updated: 2016/12/03 12:18:58 by ofedorov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ SRCSFL	+=	ft_printf.c ft_printf_format.c ft_printf_get_value.c \
 SRCSFL	+=	ft_atoi.c ft_isdigit.c\
 			ft_putchar_fd.c ft_putnbr_fd.c ft_putnstr_fd.c ft_putnwstr_fd.c \
 			ft_putstr_fd.c ft_putwchar_fd.c ft_putwstr_fd.c \
-			ft_strlen.c ft_strncpy_count.c ft_wstrlen.c
+			ft_strlen.c ft_wstrlen.c
 
 SRCSFD	=	srcs
 OBJSFD	=	objs

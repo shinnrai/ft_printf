@@ -83,11 +83,11 @@ int 	ft_vdprintf(int fd, const char *format, va_list ap)
 		if (*format == '%')
 		{
 			flags = read_format(fd, &format, ap);
-//			if (flags->error)
-//				display_error(flags->error); //TODO probably remove
+			if (flags->error)
+				display_error(flags->error); //TODO probably remove
 			chars_wr += switch_format(flags, ap);
-//			if (flags->error)
-//				display_error(flags->error);
+			if (flags->error)
+				display_error(flags->error);
 		}
 		else
 			write_count(fd, format, 1, &chars_wr);

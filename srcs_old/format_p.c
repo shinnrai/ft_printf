@@ -1,59 +1,65 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   format_x.c                                         :+:      :+:    :+:   */
+/*   format_p.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/01 14:49:52 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/01 14:49:53 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/11/01 14:50:11 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/11/01 14:50:12 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
 
-static int	_format_x(unsigned long long nbr, t_flags *flags)
+static int	_format_p(void *ptr, t_flags *flags)
 {
-	short				len;
 	unsigned long long	val;
-	char				c;
+	int					len;
+	char 				c;
 	char				*hex;
 
 	hex = "0123456789abcdef";
-	val = nbr;
+	val = (unsigned long long)ptr;
 	len = 1;
 	while (val >= 16)
 	{
 		val /= 16;
 		len++;
 	}
-	while (len-- != 0)
+	val = (unsigned long long)ptr;
+	if (flags->precision > len)
+		len = flags->precision;
+	while (len-- > 0)
 	{
-		c = hex[(ABS((nbr / ft_power(16, len)) % 16))]; //TODO check for wtf value
+		c = hex[(ABS((val / ft_power(16, len)) % 16))]; //TODO check for wtf value
 		ft_write(&c, 1, flags);
 	}
 	return (flags->error) ? -1 : flags->chars_wr;
+
 }
 
-int 	format_x(t_flags *flags, va_list ap) //TODO check 0 precision and 0 value, also alternative
+int format_p(t_flags *flags, va_list ap)
 {
-	unsigned long long	val;
+	void				*val;
 	int 				precision;
 
-	val = get_value_oxu(flags, ap);
+	val = va_arg(ap, void *);
 	flags->just_count = true;
-	_format_x(val, flags);
+	_format_p(val, flags);
 	if (flags->precision == 0 && val == 0)
 		flags->chars_val = 0;
+	flags->precision = ((flags->chars_val > flags->precision) && val != NULL) ? -1 : flags->precision;
+	flags->chars_val += 2;
 	flags->just_count = false;
 	format_before(flags);//putting '-' in format function
-	if (flags->alternative && val != 0)
-		ft_write("0x", 2, flags);
-	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
-	while (precision-- - flags->chars_val > 0 && flags->precision != -1)
-		ft_write("0", 1, flags);
+	precision = flags->precision;
+	ft_write("0x", 2, flags);
+	if (flags->zero || flags->precision != -1)
+		while (precision-- - flags->chars_val > 0)
+			ft_write("0", 1, flags);
 	if (flags->precision != 0 || val != 0)
-		_format_x(val, flags);
+		flags->chars_wr = _format_p(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);
 }

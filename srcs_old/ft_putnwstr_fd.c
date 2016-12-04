@@ -18,7 +18,7 @@ int		ft_putnwstr_fd(wchar_t const *str, int fd, int length) //check ret value
 	int	ret;
 
 	i = 0;
-	while (str && *str && i != -1 && i + ft_wcharlen(*str) <= length)
+	while (str && *str && i != -1 && length-- > 0)
 		i = ((ret = ft_putwchar_fd(*str++, fd)) != -1) ? i + ret : -1;
 	return (str == NULL) ? -1 : i;
 }
