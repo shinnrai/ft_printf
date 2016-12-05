@@ -44,7 +44,7 @@ void	format_before(t_flags *flags)
 
 	spaces = flags->field_width - flags->chars_val;
 	spaces -= (flags->sign || flags->space || !flags->positive) ? 1 : 0;
-	spaces += (flags->format == 'x' && flags->alternative ? 2 : 0);
+	spaces -= (flags->format == 'x' && flags->alternative ? 2 : 0);
 	if ((flags->format == 'd' || flags->format == 'o' || flags->format == 'x' ||
 		flags->format == 'u' || flags->format == 'i') &&
 			(flags->precision > flags->chars_val))
@@ -64,9 +64,9 @@ void	format_before(t_flags *flags)
 	if (!(flags->format == 'd' || flags->format == 'i' || flags->format == 'o'
 		  || flags->format == 'u' || flags->format == 'x'))
 		precision = flags->field_width;
-	if (precision != 0 && (flags->zero || ((flags->format == 'd' ||
-		flags->format == 'i' || flags->format == 'o' || flags->format == 'u')
-										   && flags->precision != -1)))
+	if (precision != 0 && ((flags->zero && flags->format != 'x') ||
+		((flags->format == 'd' || flags->format == 'i' || flags->format == 'o'
+		  || flags->format == 'u') && flags->precision != -1)))
 		while (precision-- - flags->chars_val > 0)
 			ft_write("0", 1, flags);
 	//TODO check if something else need to be done here

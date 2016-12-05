@@ -44,6 +44,8 @@ int 	format_o(t_flags *flags, va_list ap) //TODO check 0 precision and 0 value, 
 	_format_o(val, flags);
 	if (flags->precision == 0 && val == 0 && !flags->alternative)
 		flags->chars_val = 0;
+	if (flags->alternative && val != 0 && flags->precision <= flags->chars_val + 1)
+		flags->chars_val++;
 	flags->just_count = false;
 	format_before(flags);//putting '-' in format function
 	if (flags->alternative && val != 0 && flags->precision <= flags->chars_val + 1)

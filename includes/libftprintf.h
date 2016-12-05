@@ -61,6 +61,8 @@ typedef struct			s_flags
 }						t_flags;
 
 # define ABS(x)			(x) < 0 ? -(x) : (x)
+# define MAX(x, y)		(x) > (y) ? (x) : (y)
+# define MIN(x, y)		(x) < (y) ? (x) : (y)
 
 int						(*g_formats[128])(t_flags *flags, va_list ap);
 

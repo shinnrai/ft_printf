@@ -50,7 +50,10 @@ int 	format_x(t_flags *flags, va_list ap) //TODO check 0 precision and 0 value, 
 	if (flags->alternative && val != 0)
 		ft_write("0x", 2, flags);
 	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
-	while (precision-- - flags->chars_val > 0 && flags->precision != -1)
+	if (flags->zero && flags->precision != -1)
+		precision = flags->field_width;
+	(flags->alternative && flags->precision == -1) ? precision -= 2 : (0);
+	while (precision-- - flags->chars_val > 0 && (flags->precision > 0 || flags->zero))
 		ft_write("0", 1, flags);
 	if (flags->precision != 0 || val != 0)
 		_format_x(val, flags);

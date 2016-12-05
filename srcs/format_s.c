@@ -12,10 +12,6 @@
 
 #include <libftprintf.h>
 
-//TODO move to libft
-#define MIN(x, y) (x) <= (y) ? (x) : (y)
-#define MAX(x, y) (x) > (y) ? (x) : (y)
-
 int				ft_wcharlen(wchar_t wc)
 {
 	if (wc <= 0x7F)

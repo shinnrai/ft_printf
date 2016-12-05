@@ -69,53 +69,59 @@ static void	check_precision(t_flags *flags, char **format, va_list ap)
 			flags->precision = 0;
 	}
 }
+
+int 	is_len_mod(char c)
+{
+	if (c == 'h' || c == 'l' || c == 'j' || c == 'z' || c == 't' || c == 'L')
+		return (1);
+	return (0);
+}
+
 void	check_length_mod(t_flags *flags, char **format)
 {
 	if (**format == 'h' && *(*format + 1) == 'h')
-		flags->length_mod = LEN_HH;
+		flags->length_mod = (flags->length_mod == LEN_NONE) ? LEN_HH : MAX(LEN_HH, flags->length_mod);
 	else if (**format == 'h')
-		flags->length_mod = LEN_H;
+		flags->length_mod = (flags->length_mod == LEN_NONE) ? LEN_H : MAX(LEN_H, flags->length_mod);
 	else if (**format == 'l' && *(*format + 1) == 'l')
-		flags->length_mod = LEN_LL;
+		flags->length_mod = MAX(LEN_LL, flags->length_mod);
 	else if (**format == 'l')
-		flags->length_mod = LEN_L;
+		flags->length_mod = MAX(LEN_L, flags->length_mod);
 	else if (**format == 'j')
-		flags->length_mod = LEN_J;
+		flags->length_mod = MAX(LEN_J, flags->length_mod);
 	else if (**format == 'z')
-		flags->length_mod = LEN_Z;
+		flags->length_mod = MAX(LEN_Z, flags->length_mod);
 	else if (**format == 't')
-		flags->length_mod = LEN_T;
+		flags->length_mod = MAX(LEN_T, flags->length_mod);
 	else if (**format == 'L')
-		flags->length_mod = LEN_L_CAP;
+		flags->length_mod = MAX(LEN_L_CAP, flags->length_mod);
 	else
-		flags->length_mod = LEN_NONE;
+		return ;
 	if (flags->length_mod != LEN_NONE)
 		(*format)++;
 	if (flags->length_mod == LEN_HH || flags->length_mod == LEN_LL)
 		(*format)++;
 }
 
-void	check_field_width(t_flags *flags, char **format, va_list ap)
+void	check_field_width_dig(t_flags *flags, char **format)
 {
-	if (**format == '*')
-	{
-		flags->field_width = va_arg(ap, int); //TODO maybe check for error
-		flags->spec_width = true;
+	flags->field_width = ft_atoi(*format);
+	flags->spec_width = true;
+	while (ft_isdigit(**format))
 		(*format)++;
-	}
-	if (ft_isdigit(**format))
+	if (flags->spec_width && flags->field_width < 0)
 	{
-		flags->field_width = ft_atoi(*format);
-		flags->spec_width = true;
-		while (ft_isdigit(**format))
-			(*format)++;
+		flags->left_justified = true;
+		flags->zero = false;
+		flags->field_width = -(flags->field_width);
 	}
-	if (**format == '*')
-	{
-		flags->field_width = va_arg(ap, int); //TODO maybe check for error
-		flags->spec_width = true;
-		(*format)++;
-	}
+}
+
+void	check_field_width_star(t_flags *flags, char **format, va_list ap)
+{
+	flags->field_width = va_arg(ap, int); //TODO maybe check for error
+	flags->spec_width = true;
+	(*format)++;
 	if (flags->spec_width && flags->field_width < 0)
 	{
 		flags->left_justified = true;
@@ -231,6 +237,23 @@ void	check_specific_f(t_flags *flags)
 //
 //}
 
+int 	is_flag(char c)
+{
+	if (c == '+' || c == '-' || c == ' ' || c == '#' || c == '0')
+		return (1);
+	return (0);
+}
+
+int 	is_format(char c)
+{
+	if (c == 'c' || c == 's' || c == 'd' || c == 'i' || c == 'o' || c == 'x' ||
+		c == 'u' || c == 'f' || c == 'e' || c == 'a' || c == 'g' || c == 'n' ||
+		c == 'p' || c == 'X' || c == 'F' || c == 'E' || c == 'A' || c == 'G' ||
+		c == 'C' || c == 'S' || c == 'D' || c == 'O' || c == 'U')
+		return (1);
+	return (0);
+}
+
 t_flags	*read_format(int fd, const char **str, va_list ap)
 {
 	t_flags	*flags;
@@ -239,14 +262,24 @@ t_flags	*read_format(int fd, const char **str, va_list ap)
 	format = (char *)*str;
 	flags = new_flags(fd, 0, false);
 	format++; //TODO maybe do it before
-	check_flags(flags, &format);
-	check_field_width(flags, &format, ap);
-	check_precision(flags, &format, ap);
-	check_length_mod(flags, &format);
+	while (!is_format(*format))
+	{
+		if (is_flag(*format))
+			check_flags(flags, &format);
+		else if (ft_isdigit(*format))
+			check_field_width_dig(flags, &format);
+		else if (*format == '*')
+			check_field_width_star(flags, &format, ap);
+		else if (*format == '.')
+			check_precision(flags, &format, ap);
+		else if (is_len_mod(*format))
+			check_length_mod(flags, &format);
+		else
+			break;
+	}
 	determine_format(flags, &format);
 	check_l_mod(flags);
-	check_specific_f(flags); //<------ error
-//	if (!flags->error)
-		*str = format;
+	check_specific_f(flags);
+	*str = format;
 	return (flags);
 }
