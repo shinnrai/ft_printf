@@ -12,15 +12,7 @@
 
 #include <libftprintf.h>
 
-# define IS_FLAG(x) \
-		((x) == '-' || (x) == '+' || (x) == ' ' || (x) == '#' || (x) == '0')
-
-unsigned char g_cs[9] = {0, 0, 1, 1, 0, 0, 0, 0, 0};
-unsigned char g_dioxun[9] = {1, 1, 1, 1, 1, 1, 1, 1, 0};
-unsigned char g_feag[9] = {0, 0, 1, 1, 0, 0, 0, 0, 1};
-unsigned char g_pCS_perc[9] = {0, 0, 1, 0, 0, 0, 0, 0, 0};
-
-static void	check_flags(t_flags *flags, char **format)
+void		check_flags(t_flags *flags, const char **format)
 {
 	while (**format == '-' || **format == '+' || **format == ' ' ||
 			**format == '#' || **format == '0')
@@ -37,31 +29,27 @@ static void	check_flags(t_flags *flags, char **format)
 			flags->zero = true;
 		(*format)++;
 	}
-	if (flags->space && flags->sign) // <----- error
+	if (flags->space && flags->sign)
 		flags->space = false;
 	if (flags->zero && flags->left_justified)
-		flags->zero = false; //TODO check
-	/*if ((flags->space && flags->sign) || (flags->zero && flags->left_justified))
-		flags->error = "cannot use these flags together"; */
+		flags->zero = false;
 }
 
-static void	check_precision(t_flags *flags, char **format, va_list ap)
+void		check_precision(t_flags *flags, const char **format, va_list ap)
 {
 	if (**format == '.')
 	{
 		(*format)++;
 		if (**format == '*')
 		{
-			flags->precision = va_arg(ap, int); //TODO also handle error?
+			flags->precision = va_arg(ap, int);
 			if (flags->precision < 0)
-				flags->precision = -1; //TODO check if -1
-			flags->expl_precision = true;
+				flags->precision = -1;
 			(*format)++;
 		}
 		else if (ft_isdigit(**format))
 		{
 			flags->precision = ft_atoi(*format);
-			flags->expl_precision = true;
 			while (ft_isdigit(**format))
 				(*format)++;
 		}
@@ -70,67 +58,7 @@ static void	check_precision(t_flags *flags, char **format, va_list ap)
 	}
 }
 
-int 	is_len_mod(char c)
-{
-	if (c == 'h' || c == 'l' || c == 'j' || c == 'z' || c == 't' || c == 'L')
-		return (1);
-	return (0);
-}
-
-void	check_length_mod(t_flags *flags, char **format)
-{
-	if (**format == 'h' && *(*format + 1) == 'h')
-		flags->length_mod = (flags->length_mod == LEN_NONE) ? LEN_HH : MAX(LEN_HH, flags->length_mod);
-	else if (**format == 'h')
-		flags->length_mod = (flags->length_mod == LEN_NONE) ? LEN_H : MAX(LEN_H, flags->length_mod);
-	else if (**format == 'l' && *(*format + 1) == 'l')
-		flags->length_mod = MAX(LEN_LL, flags->length_mod);
-	else if (**format == 'l')
-		flags->length_mod = MAX(LEN_L, flags->length_mod);
-	else if (**format == 'j')
-		flags->length_mod = MAX(LEN_J, flags->length_mod);
-	else if (**format == 'z')
-		flags->length_mod = MAX(LEN_Z, flags->length_mod);
-	else if (**format == 't')
-		flags->length_mod = MAX(LEN_T, flags->length_mod);
-	else if (**format == 'L')
-		flags->length_mod = MAX(LEN_L_CAP, flags->length_mod);
-	else
-		return ;
-	if (flags->length_mod != LEN_NONE)
-		(*format)++;
-	if (flags->length_mod == LEN_HH || flags->length_mod == LEN_LL)
-		(*format)++;
-}
-
-void	check_field_width_dig(t_flags *flags, char **format)
-{
-	flags->field_width = ft_atoi(*format);
-	flags->spec_width = true;
-	while (ft_isdigit(**format))
-		(*format)++;
-	if (flags->spec_width && flags->field_width < 0)
-	{
-		flags->left_justified = true;
-		flags->zero = false;
-		flags->field_width = -(flags->field_width);
-	}
-}
-
-void	check_field_width_star(t_flags *flags, char **format, va_list ap)
-{
-	flags->field_width = va_arg(ap, int); //TODO maybe check for error
-	flags->spec_width = true;
-	(*format)++;
-	if (flags->spec_width && flags->field_width < 0)
-	{
-		flags->left_justified = true;
-		flags->zero = false;
-		flags->field_width = -(flags->field_width);
-	}
-}
-
-void	determine_format(t_flags *flags, char **f)
+void		determine_format(t_flags *flags, const char **f)
 {
 	if (**f == 'c' || **f == 's' || **f == 'd' || **f == 'i' || **f == 'o' ||
 		**f == 'x' || **f == 'u' || **f == 'f' || **f == 'e' || **f == 'a' ||
@@ -150,136 +78,29 @@ void	determine_format(t_flags *flags, char **f)
 		flags->format = **f;
 }
 
-static void	check_l_mod(t_flags *flags)
-{
-	int ret;
-
-	ret = 2;
-	if (flags->format == 'c' || flags->format == 's')
-		ret = g_cs[flags->length_mod];
-	if (flags->format == 'd' || flags->format == 'i' || flags->format == 'o' ||
-		flags->format == 'x' || flags->format == 'u' || flags->format == 'n')
-		ret = g_dioxun[flags->length_mod];
-	if (flags->format == 'f' || flags->format == 'e' || flags->format == 'a' ||
-		flags->format == 'g')
-		ret = g_feag[flags->length_mod];
-	if (flags->format == 'p' || flags->format == '%')
-		ret = g_pCS_perc[flags->length_mod];
-	if (ret == 0)
-		flags->length_mod = LEN_NONE;
-}
-
-void	assign_false(int number, ...)
-{
-	va_list	ap;
-	bool	*param;
-
-	va_start(ap, number);
-	while (number-- > 0)
-	{
-		param = va_arg(ap, bool*);
-		*param = false;
-	}
-}
-
-void	check_specific_f(t_flags *flags)
-{
-	if (flags->format == 'c')
-		assign_false(4, &flags->expl_precision, &flags->sign, &flags->space,
-					 &flags->alternative);
-	else if (flags->format == 's')
-		assign_false(3, &flags->sign, &flags->space, &flags->alternative);
-	else if	(flags->format == 'd' || flags->format == 'i')
-		assign_false(1, &flags->alternative);
-	else if (flags->format == 'o' || flags->format == 'x' ||
-					  flags->format == 'u')
-		assign_false(2, &flags->sign, &flags->space);
-	else if (flags->format == 'u')
-		assign_false(1, &flags->alternative);
-	else if (flags->format == 'n')
-	{
-		assign_false(6, &flags->sign, &flags->space, &flags->zero,
-					 &flags->left_justified,
-					 &flags->alternative, &flags->expl_precision);
-		flags->field_width = -1;
-	}
-	else if (flags->format == 'p')
-	{
-		if (flags->zero && flags->precision == -1)
-			flags->precision = (flags->field_width >= 2) ? flags->field_width - 2 : flags->precision;
-		assign_false(5, &flags->sign, &flags->zero, &flags->space, &flags->alternative,
-					 &flags->expl_precision);
-	}
-	else if (!supported_format(flags->format))
-		assign_false(2, &flags->space, &flags->sign);
-	if ((flags->format == 'd' || flags->format == 'i' || flags->format == 'x' ||
-			flags->format == 'u' || flags->format == 'o') && flags->precision != -1)
-		assign_false(1, &flags->zero);
-
-}
-
-//void	check_specific_f(t_flags *flags)
-//{
-//	if ((flags->format == 'c' && (flags->expl_precision || flags->sign ||
-//			flags->space || flags->alternative || flags->zero)) ||
-//		(flags->format == 's' && (flags->sign || flags->space || flags->zero ||
-//			flags->alternative)) ||
-//		((flags->format == 'd' || flags->format == 'i') && flags->alternative)
-//		|| ((flags->format == 'o' || flags->format == 'x' ||
-//		flags->format == 'u') && (flags->sign || flags->space)) ||
-//		(flags->format == 'u' && flags->alternative) ||
-//		(flags->format == 'n' && (flags->sign || flags->space || flags->zero ||
-//			flags->left_justified || flags->field_width != -1 ||
-//			flags->alternative || flags->expl_precision)) ||
-//		(flags->format == 'p' && (flags->sign || flags->space || flags->zero ||
-//			flags->alternative || flags->expl_precision))) //TODO OMG CHECK THIS SHIT
-//		flags->error = "undefined behavior";
-//
-//}
-
-int 	is_flag(char c)
-{
-	if (c == '+' || c == '-' || c == ' ' || c == '#' || c == '0')
-		return (1);
-	return (0);
-}
-
-int 	is_format(char c)
-{
-	if (c == 'c' || c == 's' || c == 'd' || c == 'i' || c == 'o' || c == 'x' ||
-		c == 'u' || c == 'f' || c == 'e' || c == 'a' || c == 'g' || c == 'n' ||
-		c == 'p' || c == 'X' || c == 'F' || c == 'E' || c == 'A' || c == 'G' ||
-		c == 'C' || c == 'S' || c == 'D' || c == 'O' || c == 'U')
-		return (1);
-	return (0);
-}
-
-t_flags	*read_format(int fd, const char **str, va_list ap)
+t_flags		*read_format(int fd, const char **str, va_list ap)
 {
 	t_flags	*flags;
-	char	*format;
 
-	format = (char *)*str;
 	flags = new_flags(fd, 0, false);
-	format++; //TODO maybe do it before
-	while (!is_format(*format))
+	(*str)++;
+	while (!is_format(**str))
 	{
-		if (is_flag(*format))
-			check_flags(flags, &format);
-		else if (ft_isdigit(*format))
-			check_field_width_dig(flags, &format);
-		else if (*format == '*')
-			check_field_width_star(flags, &format, ap);
-		else if (*format == '.')
-			check_precision(flags, &format, ap);
-		else if (is_len_mod(*format))
-			check_length_mod(flags, &format);
+		if (is_flag(**str))
+			check_flags(flags, str);
+		else if (ft_isdigit(**str))
+			check_field_width_dig(flags, str);
+		else if (**str == '*')
+			check_field_width_star(flags, str, ap);
+		else if (**str == '.')
+			check_precision(flags, str, ap);
+		else if (is_len_mod(**str))
+			check_length_mod(flags, str);
 		else
-			break;
+			break ;
 	}
-	determine_format(flags, &format);
+	determine_format(flags, str);
 	check_l_mod(flags);
 	check_specific_f(flags);
-	*str = format;
 	return (flags);
 }

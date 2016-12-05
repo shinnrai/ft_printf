@@ -12,13 +12,16 @@
 
 #include <libftprintf.h>
 
-int		ft_putnwstr_fd(wchar_t const *str, int fd, int length) //check ret value
+int		ft_putnwstr_fd(wchar_t const *str, int fd, int length)
 {
 	int i;
 	int	ret;
 
 	i = 0;
 	while (str && *str && i != -1 && i + ft_wcharlen(*str) <= length)
-		i = ((ret = ft_putwchar_fd(*str++, fd)) != -1) ? i + ret : -1;
+	{
+		ret = ft_putwchar_fd(*str++, fd);
+		i = (ret != -1) ? i + ret : -1;
+	}
 	return (str == NULL) ? -1 : i;
 }

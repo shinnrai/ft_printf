@@ -12,20 +12,7 @@
 
 #include <libftprintf.h>
 
-int				ft_wcharlen(wchar_t wc)
-{
-	if (wc <= 0x7F)
-		return (1);
-	if (wc <= 0x7FF)
-		return (2);
-	if (wc <= 0xFFFF)
-		return (3);
-	if (wc <= 0x10FFFF)
-		return (4);
-	return (0);
-}
-
-static int		wchars_in_len(wchar_t *str, int len)
+static int	wchars_in_len(wchar_t *str, int len)
 {
 	int	n;
 
@@ -38,30 +25,32 @@ static int		wchars_in_len(wchar_t *str, int len)
 	return (n);
 }
 
-static int		_format_s(void *str, t_flags *flags)
+static int	do_s(void *str, t_flags *flags)
 {
 	int	written;
 
 	written = 0;
 	if (flags->just_count)
 	{
-		if (flags->precision >= 0)
-			flags->chars_val = MIN(flags->precision, flags->length_mod == LEN_NONE ?
-			(int)ft_strlen(str) : wchars_in_len(str, flags->precision)); //TODO diff wstrlen and strlen
+		if (flags->length_mod == LEN_NONE)
+			flags->chars_val = (flags->precision >= 0) ? MIN(flags->precision,
+				(int)ft_strlen(str)) : ft_strlen((char*)str);
 		else
-			flags->chars_val = (flags->length_mod == LEN_NONE) ? ft_strlen((char*)str)
-					: ft_wstrlen((wchar_t*)str);
+			flags->chars_val = (flags->precision >= 0) ? MIN(flags->precision,
+			wchars_in_len(str, flags->precision)) : ft_wstrlen((wchar_t*)str);
 	}
 	else
 	{
 		if (flags->precision != -1)
-			written = (flags->length_mod == LEN_NONE) ? ft_putnstr_fd(str, flags->fd, flags->precision) : ft_putnwstr_fd(str, flags->fd, flags->precision);
+			written = (flags->length_mod == LEN_NONE)
+					? ft_putnstr_fd(str, flags->fd, flags->precision)
+					: ft_putnwstr_fd(str, flags->fd, flags->precision);
 		else
-			written = (flags->length_mod == LEN_NONE) ? ft_putstr_fd(str, flags->fd) : ft_putwstr_fd(str, flags->fd);
+			written = (flags->length_mod == LEN_NONE)
+			? ft_putstr_fd(str, flags->fd) : ft_putwstr_fd(str, flags->fd);
 		flags->chars_wr += written;
 	}
-	if (written < 0)
-		flags->error = "can't write to the file descriptor";
+	(written < 0) ? flags->error = "can't write to the file descriptor" : (0);
 	return (flags->error) ? -1 : flags->chars_wr;
 }
 
@@ -74,7 +63,7 @@ static void	*get_value(t_flags *flags, va_list ap)
 	return (NULL);
 }
 
-int 			format_s(t_flags *flags, va_list ap)
+int			format_s(t_flags *flags, va_list ap)
 {
 	void	*val;
 
@@ -84,14 +73,15 @@ int 			format_s(t_flags *flags, va_list ap)
 		flags->chars_val = (flags->precision >= 0 && flags->precision <= 6) ?
 				flags->precision : 6;
 	else
-		_format_s(val, flags);
+		do_s(val, flags);
 	flags->just_count = false;
 	format_before(flags);
 	if (val == NULL)
-		ft_write("(null)", (flags->precision >= 0 && flags->precision < 6) ?
-				flags->precision : 6, flags);
+		ft_printf_write("(null)",
+						(flags->precision >= 0 && flags->precision < 6) ?
+						flags->precision : 6, flags);
 	else
-		_format_s(val, flags);
+		do_s(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);
 }

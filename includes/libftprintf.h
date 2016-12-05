@@ -6,12 +6,12 @@
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/01 15:18:00 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/01 15:18:01 by ofedorov         ###   ########.fr       */
+/*   Updated: 2016/12/05 12:20:02 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFTPRINTF_H
-# define LIBFTPRINTF_H //TODO change names of files to ft_printf_*.c
+# define LIBFTPRINTF_H
 
 # include <unistd.h>
 # include <stdlib.h>
@@ -39,8 +39,7 @@ typedef unsigned		t_length_mod;
 
 typedef struct			s_flags
 {
-	//TODO add flags
-	int 				fd;
+	int					fd;
 	bool				capital;
 	bool				left_justified;
 	bool				sign;
@@ -48,15 +47,13 @@ typedef struct			s_flags
 	bool				space;
 	bool				alternative;
 	bool				zero;
-	int 				field_width;
-	bool				spec_width;
+	int					field_width;
 	int					precision;
-	bool				expl_precision;
 	bool				just_count;
 	t_length_mod		length_mod;
 	char				format;
 	int					chars_wr;
-	int 				chars_val;
+	int					chars_val;
 	char				*error;
 }						t_flags;
 
@@ -66,8 +63,6 @@ typedef struct			s_flags
 
 int						(*g_formats[128])(t_flags *flags, va_list ap);
 
-void					ft_bzero(void *s, size_t n);
-void					*ft_memset(void *b, int c, size_t len);
 int						ft_putchar_fd(char c, int fd);
 int						ft_putwchar_fd(wchar_t c, int fd);
 int						ft_putstr_fd(char const *s, int fd);
@@ -76,49 +71,61 @@ int						ft_putwstr_fd(wchar_t const *str, int fd);
 int						ft_putnwstr_fd(wchar_t const *str, int fd, int length);
 size_t					ft_strlen(const char *s);
 size_t					ft_wstrlen(wchar_t *str);
-char					*ft_strdup(const char *s1);
 int						ft_isdigit(int c);
 int						ft_atoi(const char *str);
-void					ft_putnbr_fd(int n, int fd); //TODO make length return
 int						ft_wcharlen(wchar_t wc);
+void					ft_putnbr_fd(int n, int fd);
 
-void					ft_write(const char *to_write, int size,
-								 t_flags *flags);
+void					ft_printf_write(const char *to_write, int size,
+										t_flags *flags);
 t_flags					*new_flags(int fd, char format, bool just_count);
-t_flags					*flags_count(t_flags *flags);
 t_flags					*read_format(int fd, const char **str, va_list ap);
 void					format_before(t_flags *flags);
 void					format_after(t_flags *flags);
-int						switch_format(t_flags *flags, va_list ap);
+int						switch_format(t_flags *flags, va_list ap, int ch_wr);
 long double				get_value_feag(t_flags *flags, va_list ap);
 unsigned long long int	get_value_oxu(t_flags *flags, va_list ap);
 int						supported_format(char c);
 
-int 					ft_printf(const char *format, ...);
-int						ft_dprintf(int fd, const char *format, ...);
-int 					ft_vprintf(const char *format, va_list ap);
-int 					ft_vdprintf(int fd, const char *format, va_list ap);
+void					check_length_mod(t_flags *flags, const char **format);
+void					check_field_width_dig(t_flags *flags,
+												const char **format);
+void					check_field_width_star(t_flags *flags,
+											const char **format, va_list ap);
+void					check_l_mod(t_flags *flags);
+void					check_specific_f(t_flags *flags);
+void					determine_format(t_flags *flags, const char **f);
+void					check_precision(t_flags *flags, const char **format,
+										va_list ap);
+void					check_flags(t_flags *flags, const char **format);
 
+void					assign_false(int number, ...);
+int						is_format(char c);
+int						is_flag(char c);
+int						is_len_mod(char c);
+
+int						ft_printf(const char *format, ...);
+int						ft_dprintf(int fd, const char *format, ...);
+int						ft_vprintf(const char *format, va_list ap);
+int						ft_vdprintf(int fd, const char *format, va_list ap);
 
 int						is_nan(long double nbr);
 int						is_inf(long double nbr);
 
-int						format_a(t_flags *flags, va_list ap); //TODO make array of functions
+int						format_a(t_flags *flags, va_list ap);
 int						format_c(t_flags *flags, va_list ap);
 int						format_d(t_flags *flags, va_list ap);
 int						format_i(t_flags *flags, va_list ap);
-int 					format_e(t_flags *flags, va_list ap);
-int 					format_f(t_flags *flags, va_list ap);
+int						format_e(t_flags *flags, va_list ap);
+int						format_f(t_flags *flags, va_list ap);
 int						format_s(t_flags *flags, va_list ap);
-int 					format_o(t_flags *flags, va_list ap);
-int      			    format_u(t_flags *flags, va_list ap);
-int 					format_x(t_flags *flags, va_list ap);
-int 					format_p(t_flags *flags, va_list ap);
-int						format_another(t_flags *flags, va_list ap); //TODO rename the file
+int						format_o(t_flags *flags, va_list ap);
+int						format_u(t_flags *flags, va_list ap);
+int						format_x(t_flags *flags, va_list ap);
+int						format_p(t_flags *flags, va_list ap);
+int						format_another(t_flags *flags, va_list ap);
 
-
-
-int 					ft_putpower(int power, t_flags *flags, int min_digits);
+int						ft_putpower(int power, t_flags *flags, int min_digits);
 long long				ft_power(int base, int power);
 
 #endif

@@ -12,7 +12,7 @@
 
 #include <libftprintf.h>
 
-int format_i(t_flags *flags, va_list ap)
+int	format_i(t_flags *flags, va_list ap)
 {
 	return (format_d(flags, ap));
 }

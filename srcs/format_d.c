@@ -11,26 +11,14 @@
 /* ************************************************************************** */
 
 #include <libftprintf.h>
-//TODO add to libft
-long long		ft_power(int base, int power)
-{
-	long long	nbr;
 
-	nbr = 1;
-	if (power < 0)
-		return (0);
-	while (power-- > 0)
-		nbr *= base;
-	return (nbr);
-}
-
-static int 			_format_d(ptrdiff_t nbr, t_flags *flags) //TODO handle -1
+static int			do_d(ptrdiff_t nbr, t_flags *flags)
 {
 	short		len;
 	ptrdiff_t	val;
 	char		c;
 
-    val = nbr;
+	val = nbr;
 	len = 1;
 	while (val >= 10 || val <= -10)
 	{
@@ -39,8 +27,8 @@ static int 			_format_d(ptrdiff_t nbr, t_flags *flags) //TODO handle -1
 	}
 	while (len-- != 0)
 	{
-		c = '0' + (ABS((nbr / ft_power(10, len)) % 10)); //TODO check for wtf value
-		ft_write(&c, 1, flags);
+		c = '0' + (ABS((nbr / ft_power(10, len)) % 10));
+		ft_printf_write(&c, 1, flags);
 	}
 	return (flags->error) ? -1 : flags->chars_wr;
 }
@@ -66,20 +54,20 @@ static ptrdiff_t	get_value(t_flags *flags, va_list ap)
 	return (0);
 }
 
-int          format_d(t_flags *flags, va_list ap)
+int					format_d(t_flags *flags, va_list ap)
 {
 	ptrdiff_t	val;
 
 	val = get_value(flags, ap);
 	flags->just_count = true;
-	_format_d(val, flags);
+	do_d(val, flags);
 	if (flags->precision == 0 && val == 0)
 		flags->chars_val = 0;
 	flags->just_count = false;
 	flags->positive = (val < 0) ? false : true;
-	format_before(flags);//putting '-' in format function
+	format_before(flags);
 	if (flags->precision != 0 || val != 0)
-		flags->chars_wr = _format_d(val, flags);
+		flags->chars_wr = do_d(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);
 }

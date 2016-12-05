@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_write.c                                         :+:      :+:    :+:   */
+/*   ft_printf_write.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/06 15:29:42 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/06 15:29:43 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/12/05 10:11:27 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/12/05 10:11:29 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,13 @@ static int	wr_cs(int fd, const char *str, int size)
 	return (i);
 }
 
-void		ft_write(const char *to_write, int size, t_flags *flags)
+void		ft_printf_write(const char *to_write, int size, t_flags *flags)
 {
 	if (flags->error)
 		return ;
 	if (flags->just_count == true)
-		flags->chars_val += size; //maybe add to chars_val
-	else if (flags->capital == true)
+		flags->chars_val += size;
+	else if (flags->capital)
 	{
 		if (wr_cs(flags->fd, to_write, size) != size)
 			flags->error = "Error in writing to file descriptor";

@@ -12,7 +12,7 @@
 
 #include <libftprintf.h>
 
-static int	_format_x(unsigned long long nbr, t_flags *flags)
+static int	do_x(unsigned long long nbr, t_flags *flags)
 {
 	short				len;
 	unsigned long long	val;
@@ -29,34 +29,36 @@ static int	_format_x(unsigned long long nbr, t_flags *flags)
 	}
 	while (len-- != 0)
 	{
-		c = hex[(ABS((nbr / ft_power(16, len)) % 16))]; //TODO check for wtf value
-		ft_write(&c, 1, flags);
+		c = hex[(ABS((nbr / ft_power(16, len)) % 16))];
+		ft_printf_write(&c, 1, flags);
 	}
 	return (flags->error) ? -1 : flags->chars_wr;
 }
 
-int 	format_x(t_flags *flags, va_list ap) //TODO check 0 precision and 0 value, also alternative
+int			format_x(t_flags *flags, va_list ap)
 {
 	unsigned long long	val;
-	int 				precision;
+	int					precision;
 
 	val = get_value_oxu(flags, ap);
 	flags->just_count = true;
-	_format_x(val, flags);
+	do_x(val, flags);
 	if (flags->precision == 0 && val == 0)
 		flags->chars_val = 0;
 	flags->just_count = false;
-	format_before(flags);//putting '-' in format function
+	format_before(flags);
 	if (flags->alternative && val != 0)
-		ft_write("0x", 2, flags);
-	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
+		ft_printf_write("0x", 2, flags);
+	precision = (flags->precision == -1) ? flags->field_width :
+				flags->precision;
 	if (flags->zero && flags->precision != -1)
 		precision = flags->field_width;
 	(flags->alternative && flags->precision == -1) ? precision -= 2 : (0);
-	while (precision-- - flags->chars_val > 0 && (flags->precision > 0 || flags->zero))
-		ft_write("0", 1, flags);
+	while (precision-- - flags->chars_val > 0 && (flags->precision > 0 ||
+			flags->zero))
+		ft_printf_write("0", 1, flags);
 	if (flags->precision != 0 || val != 0)
-		_format_x(val, flags);
+		do_x(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);
 }

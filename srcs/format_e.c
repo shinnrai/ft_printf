@@ -14,7 +14,7 @@
 
 const char	g_dec[11] = "0123456789";
 
-static int  get_power(long double *nbr)
+static int	get_power(long double *nbr)
 {
 	int i;
 
@@ -36,8 +36,8 @@ static int  get_power(long double *nbr)
 
 static int	round(long double *nbr, t_flags *flags)
 {
-	int 		precision;
-	int 		round_top;
+	int			precision;
+	int			round_top;
 	long double	left;
 
 	*nbr = ABS(*nbr);
@@ -45,7 +45,7 @@ static int	round(long double *nbr, t_flags *flags)
 	precision = flags->precision;
 	left = *nbr - (long long)*nbr;
 	while (precision-- > 0)
-		left = 10 * left - (int) (left * 10);
+		left = 10 * left - (int)(left * 10);
 	if (left > 0.5)
 	{
 		left = -1;
@@ -59,29 +59,29 @@ static int	round(long double *nbr, t_flags *flags)
 	return (0);
 }
 
-static int 	_format_e(long double nbr, t_flags *flags) //TODO check power e+00 or e+0
+static int	do_e(long double nbr, t_flags *flags)
 {
 	int power;
 	int left;
 
-	round(&nbr, flags); //TODO test with min max
+	round(&nbr, flags);
 	(flags->precision == -1) ? flags->precision = 6 : (0);
 	left = flags->precision;
 	power = get_power(&nbr);
-	ft_write(&g_dec[(int)nbr], 1, flags);
-	if (left != 0 || flags->alternative) //maybe remove left == 0
-		ft_write(".", 1, flags);
+	ft_printf_write(&g_dec[(int)nbr], 1, flags);
+	if (left != 0 || flags->alternative)
+		ft_printf_write(".", 1, flags);
 	while (left-- != 0)
 	{
 		nbr = (nbr - (int)nbr) * 10;
-		ft_write(&g_dec[(int)nbr], 1, flags);
+		ft_printf_write(&g_dec[(int)nbr], 1, flags);
 	}
-	ft_write("e", 1, flags);
+	ft_printf_write("e", 1, flags);
 	ft_putpower(power, flags, 2);
 	return (flags->chars_wr);
 }
 
-int 		format_e(t_flags *flags, va_list ap)
+int			format_e(t_flags *flags, va_list ap)
 {
 	long double	val;
 
@@ -93,14 +93,14 @@ int 		format_e(t_flags *flags, va_list ap)
 		flags->space = is_nan(val) ? false : flags->space;
 	}
 	else
-		_format_e(val, flags);
+		do_e(val, flags);
 	flags->just_count = false;
 	flags->positive = (val < 0) ? false : true;
-	format_before(flags); //TODO check inf nan
+	format_before(flags);
 	if (is_nan(val) || is_inf(val))
-		ft_write(is_nan(val) ? "nan" : "inf", 3, flags);
+		ft_printf_write(is_nan(val) ? "nan" : "inf", 3, flags);
 	else
-		flags->chars_wr = _format_e(val, flags);
+		flags->chars_wr = do_e(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);
 }

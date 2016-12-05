@@ -12,11 +12,11 @@
 
 #include <libftprintf.h>
 
-static int	_format_p(void *ptr, t_flags *flags)
+static int	do_p(void *ptr, t_flags *flags)
 {
 	unsigned long long	val;
 	int					len;
-	char 				c;
+	char				c;
 	char				*hex;
 
 	hex = "0123456789abcdef";
@@ -32,34 +32,34 @@ static int	_format_p(void *ptr, t_flags *flags)
 		len = flags->precision;
 	while (len-- > 0)
 	{
-		c = hex[(ABS((val / ft_power(16, len)) % 16))]; //TODO check for wtf value
-		ft_write(&c, 1, flags);
+		c = hex[(ABS((val / ft_power(16, len)) % 16))];
+		ft_printf_write(&c, 1, flags);
 	}
 	return (flags->error) ? -1 : flags->chars_wr;
-
 }
 
-int format_p(t_flags *flags, va_list ap)
+int			format_p(t_flags *flags, va_list ap)
 {
 	void				*val;
-	int 				precision;
+	int					precision;
 
 	val = va_arg(ap, void *);
 	flags->just_count = true;
-	_format_p(val, flags);
+	do_p(val, flags);
 	if (flags->precision == 0 && val == 0)
 		flags->chars_val = 0;
-	flags->precision = ((flags->chars_val > flags->precision) && val != NULL) ? -1 : flags->precision;
+	flags->precision = ((flags->chars_val > flags->precision) && val != NULL)
+						? -1 : flags->precision;
 	flags->chars_val += 2;
 	flags->just_count = false;
-	format_before(flags);//putting '-' in format function
+	format_before(flags);
 	precision = flags->precision;
-	ft_write("0x", 2, flags);
+	ft_printf_write("0x", 2, flags);
 	if (flags->zero || flags->precision != -1)
 		while (precision-- - flags->chars_val > 0)
-			ft_write("0", 1, flags);
+			ft_printf_write("0", 1, flags);
 	if (flags->precision != 0 || val != 0)
-		flags->chars_wr = _format_p(val, flags);
+		flags->chars_wr = do_p(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);
 }

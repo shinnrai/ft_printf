@@ -12,11 +12,22 @@
 
 #include <libftprintf.h>
 
+#define IS_DIOUX(c) (c == 'd' || c == 'i' || c == 'o' || c == 'u' || c == 'x')
+
+int		supported_format(char c)
+{
+	if (c == 'c' || c == 's' || c == 'd' || c == 'i' || c == 'o' ||
+		c == 'x' || c == 'u' || c == 'f' || c == 'e' || c == 'a' ||
+		c == 'g' || c == 'n' || c == 'p')
+		return (1);
+	return (0);
+}
+
 t_flags	*new_flags(int fd, char format, bool just_count)
 {
 	t_flags	*flags;
 
-	flags = (t_flags*)malloc(sizeof(t_flags)); //TODO check for error
+	flags = (t_flags*)malloc(sizeof(t_flags));
 	flags->fd = fd;
 	flags->format = format;
 	flags->length_mod = LEN_NONE;
@@ -27,10 +38,8 @@ t_flags	*new_flags(int fd, char format, bool just_count)
 	flags->alternative = false;
 	flags->capital = false;
 	flags->field_width = -1;
-	flags->spec_width = false;
 	flags->left_justified = false;
 	flags->precision = -1;
-	flags->expl_precision = false;
 	flags->sign = false;
 	flags->positive = true;
 	flags->space = false;
@@ -45,45 +54,53 @@ void	format_before(t_flags *flags)
 	spaces = flags->field_width - flags->chars_val;
 	spaces -= (flags->sign || flags->space || !flags->positive) ? 1 : 0;
 	spaces -= (flags->format == 'x' && flags->alternative ? 2 : 0);
-	if ((flags->format == 'd' || flags->format == 'o' || flags->format == 'x' ||
-		flags->format == 'u' || flags->format == 'i') &&
-			(flags->precision > flags->chars_val))
+	if (IS_DIOUX(flags->format) && (flags->precision > flags->chars_val))
 		spaces -= flags->precision - flags->chars_val;
 	if (!flags->left_justified && flags->field_width != -1 && !flags->zero)
 		while (spaces-- > 0)
-			ft_write(" ", 1, flags);
-	if (flags->sign && flags->positive)
-		ft_write("+", 1, flags);
-	if (flags->space && flags->positive)
-		ft_write(" ", 1, flags);
-	if (!flags->positive)
-		ft_write("-", 1, flags);
-	if ((flags->sign || flags->space || !flags->positive) && !flags->left_justified)
-		flags->field_width = (flags->field_width == -1) ? -1 : flags->field_width - 1;
-	precision = (flags->precision == -1) ? flags->field_width : flags->precision;
-	if (!(flags->format == 'd' || flags->format == 'i' || flags->format == 'o'
-		  || flags->format == 'u' || flags->format == 'x'))
+			ft_printf_write(" ", 1, flags);
+	if ((flags->sign || flags->space) && flags->positive)
+		ft_printf_write(flags->sign ? "+" : " ", 1, flags);
+	(!flags->positive) ? ft_printf_write("-", 1, flags) : (0);
+	((flags->sign || flags->space || !flags->positive) &&
+	!flags->left_justified && flags->field_width != -1)
+	? flags->field_width-- : 0;
+	precision = flags->precision == -1 ? flags->field_width : flags->precision;
+	if (!IS_DIOUX(flags->format))
 		precision = flags->field_width;
 	if (precision != 0 && ((flags->zero && flags->format != 'x') ||
 		((flags->format == 'd' || flags->format == 'i' || flags->format == 'o'
-		  || flags->format == 'u') && flags->precision != -1)))
+		|| flags->format == 'u') && flags->precision != -1)))
 		while (precision-- - flags->chars_val > 0)
-			ft_write("0", 1, flags);
-	//TODO check if something else need to be done here
+			ft_printf_write("0", 1, flags);
 }
 
-void	format_after(t_flags *flags) //TODO check if it's working
+void	format_after(t_flags *flags)
 {
 	if (flags->error || flags->chars_wr == -1)
 		flags->chars_wr = -1;
 	else if (flags->left_justified && flags->field_width != -1)
 		while (flags->chars_wr < flags->field_width && !flags->error)
-			ft_write(" ", 1, flags);
+			ft_printf_write(" ", 1, flags);
 }
 
-int		switch_format(t_flags *flags, va_list ap) //TODO redo
+int		switch_format(t_flags *flags, va_list ap, int ch_wr)
 {
+	int	wr;
+
+	wr = 1;
 	if (supported_format(flags->format))
 		return (g_formats[(int)flags->format](flags, ap));
-	return (g_formats[(int)'?'](flags, ap));
+	if (flags->format == 'n')
+	{
+		ft_putnbr_fd(ch_wr, flags->fd);
+		while (ch_wr >= 10)
+		{
+			ch_wr /= 10;
+			wr++;
+		}
+		return (wr);
+	}
+	else
+		return (g_formats[(int)'?'](flags, ap));
 }
