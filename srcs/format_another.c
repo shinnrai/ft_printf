@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   format_percent.c                                   :+:      :+:    :+:   */
+/*   format_another.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/21 23:04:25 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/21 23:04:29 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/12/04 14:01:18 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/12/04 14:01:28 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
 
-static int _format_other(t_flags *flags)
+static int _format_another(t_flags *flags)
 {
 	if (flags->format)
 		ft_write(&flags->format, 1, flags);
@@ -22,9 +22,9 @@ static int _format_other(t_flags *flags)
 int		format_another(t_flags *flags, va_list ap)
 {
 	(void)ap;
-	flags->chars_val = 1;
+	flags->chars_val = (flags->format) ? 1 : 0;
 	format_before(flags);
-	_format_other(flags);
+	_format_another(flags);
 	format_after(flags);
 	return (flags->chars_wr);
 }

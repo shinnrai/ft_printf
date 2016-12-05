@@ -6,7 +6,7 @@
 #    By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/10/26 12:41:24 by ofedorov          #+#    #+#              #
-#    Updated: 2016/12/03 12:18:58 by ofedorov         ###   ########.fr        #
+#    Updated: 2016/12/04 16:30:48 by ofedorov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,8 @@ CC		=	gcc
 CFLAGS	=	-Wall -Werror -Wextra
 
 SRCSFL	+=	format_a.c format_c.c format_d.c format_e.c  \
-			format_i.c format_o.c format_p.c format_percent.c \
-			format_s.c format_u.c format_x.c
+			format_i.c format_o.c format_p.c format_another.c \
+			format_s.c format_u.c format_x.c format_f.c
 SRCSFL	+=	ft_printf.c ft_printf_format.c ft_printf_get_value.c \
 			ft_printf_read_format.c ft_write.c
 SRCSFL	+=	ft_atoi.c ft_isdigit.c\

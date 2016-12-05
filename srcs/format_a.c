@@ -51,23 +51,27 @@ static int	get_power(long double *nbr)
 static int	round(long double *nbr, t_flags *flags)
 {
 	int 		precision;
+	int 		round_top;
 	long double	left;
 
 	*nbr = ABS(*nbr);
+	round_top = 0;
 	precision = flags->precision;
-	left = *nbr - (int)*nbr;
+	left = *nbr - (long long)*nbr;
 	while (precision-- > 0)
 		left = 16 * left - (int) (left * 16);
 	if (left > 0.5)
+	{
 		left = -1;
+		round_top = 1;
+	}
 	precision = flags->precision;
 	while (precision-- > 0)
 		left = left / 16;
-	if (flags->precision != -1)
+	if (round_top)
 		*nbr = *nbr - left;
 	return (0);
 }
-
 int 				ft_putpower(int power, t_flags *flags, int min_digits) //TODO handle -1
 {
 	short		len;
@@ -98,8 +102,6 @@ static int	_format_a(long double nbr, t_flags *flags)
 	char	*hex;
 
 	hex = "0123456789abcdef";
-	if (nbr < 0)
-		ft_write("-", 1, flags);
 	ft_write("0x", 2, flags);
 	power = get_power(&nbr);
 	power += round(&nbr, flags); //TODO test with min max

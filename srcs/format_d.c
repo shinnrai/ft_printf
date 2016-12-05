@@ -14,7 +14,7 @@
 //TODO add to libft
 long long		ft_power(int base, int power)
 {
-	ptrdiff_t	nbr;
+	long long	nbr;
 
 	nbr = 1;
 	if (power < 0)

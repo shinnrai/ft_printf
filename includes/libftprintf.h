@@ -106,6 +106,7 @@ int						format_c(t_flags *flags, va_list ap);
 int						format_d(t_flags *flags, va_list ap);
 int						format_i(t_flags *flags, va_list ap);
 int 					format_e(t_flags *flags, va_list ap);
+int 					format_f(t_flags *flags, va_list ap);
 int						format_s(t_flags *flags, va_list ap);
 int 					format_o(t_flags *flags, va_list ap);
 int      			    format_u(t_flags *flags, va_list ap);

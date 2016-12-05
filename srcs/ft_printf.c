@@ -51,6 +51,7 @@ static void	setup_formats(void)
 	g_formats['o'] = format_o;
 	g_formats['u'] = format_u;
 	g_formats['x'] = format_x;
+	g_formats['f'] = format_f;
 	g_formats['p'] = format_p;
 	g_formats['?'] = format_another;
 }
@@ -91,7 +92,8 @@ int 	ft_vdprintf(int fd, const char *format, va_list ap)
 		}
 		else
 			write_count(fd, format, 1, &chars_wr);
-		format++;
+		if (*format)
+			format++;
 	}
 	return (chars_wr);
 }

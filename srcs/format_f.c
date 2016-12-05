@@ -1,38 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   format_e.c                                         :+:      :+:    :+:   */
+/*   format_f.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ofedorov <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/01 14:48:44 by ofedorov          #+#    #+#             */
-/*   Updated: 2016/11/01 14:48:46 by ofedorov         ###   ########.fr       */
+/*   Created: 2016/12/04 15:51:35 by ofedorov          #+#    #+#             */
+/*   Updated: 2016/12/04 15:51:36 by ofedorov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <libftprintf.h>
-
-const char	g_dec[11] = "0123456789";
-
-static int  get_power(long double *nbr)
-{
-	int i;
-
-	i = 0;
-	if (*nbr >= 10)
-		while ((*nbr) >= 10)
-		{
-			i++;
-			*nbr /= 10;
-		}
-	else if (0 < *nbr && *nbr < 1)
-		while (*nbr < 1)
-		{
-			i--;
-			*nbr *= 10;
-		}
-	return (i);
-}
 
 static int	round(long double *nbr, t_flags *flags)
 {
@@ -59,29 +37,37 @@ static int	round(long double *nbr, t_flags *flags)
 	return (0);
 }
 
-static int 	_format_e(long double nbr, t_flags *flags) //TODO check power e+00 or e+0
+static int 	_format_f(long double nbr, t_flags *flags) //TODO check power e+00 or e+0
 {
-	int power;
-	int left;
+	int 	left;
+	int 	power;
+	char	c;
 
-	round(&nbr, flags); //TODO test with min max
 	(flags->precision == -1) ? flags->precision = 6 : (0);
 	left = flags->precision;
-	power = get_power(&nbr);
-	ft_write(&g_dec[(int)nbr], 1, flags);
+	round(&nbr, flags);
+	power = 0;
+	if (nbr < 1 && nbr > -1)
+		ft_write("0", 1, flags);
+	while (ABS(nbr) >= ft_power(10, power))
+		power++;
+	while (power-- > 0)
+	{
+		c = '0' + (long long)(nbr / ft_power(10, power)) % 10;
+		ft_write(&c, 1, flags);
+	}
 	if (left != 0 || flags->alternative) //maybe remove left == 0
 		ft_write(".", 1, flags);
 	while (left-- != 0)
 	{
-		nbr = (nbr - (int)nbr) * 10;
-		ft_write(&g_dec[(int)nbr], 1, flags);
+		nbr = (nbr - (long long)nbr) * 10;
+		c = '0' + (int)nbr;
+		ft_write(&c, 1, flags);
 	}
-	ft_write("e", 1, flags);
-	ft_putpower(power, flags, 2);
 	return (flags->chars_wr);
 }
 
-int 		format_e(t_flags *flags, va_list ap)
+int 		format_f(t_flags *flags, va_list ap)
 {
 	long double	val;
 
@@ -93,14 +79,14 @@ int 		format_e(t_flags *flags, va_list ap)
 		flags->space = is_nan(val) ? false : flags->space;
 	}
 	else
-		_format_e(val, flags);
+		_format_f(val, flags);
 	flags->just_count = false;
 	flags->positive = (val < 0) ? false : true;
 	format_before(flags); //TODO check inf nan
 	if (is_nan(val) || is_inf(val))
 		ft_write(is_nan(val) ? "nan" : "inf", 3, flags);
 	else
-		flags->chars_wr = _format_e(val, flags);
+		flags->chars_wr = _format_f(val, flags);
 	format_after(flags);
 	return (flags->chars_wr);
 }
